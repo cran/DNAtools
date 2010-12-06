@@ -1,0 +1,57 @@
+\name{dbSimulate}
+\alias{dbSimulate}
+\title{Simulate a DNA database}
+\description{
+  Simulates a DNA database given a set of allele probabilities and theta
+  value. It is possible to have close relatives in the database
+  simulated in pairs, such that within each pair the profiles are higher
+  correlated due to close familial relationship, but between pairs of
+  profiles the correlation is only modelled by theta.
+}
+\usage{
+dbSimulate(probs,theta=0.03,n=1000,relatives=NULL)
+}
+\arguments{
+  \item{probs}{List of allele probabilities, where each element in the
+    list is a vector of allele probabilities.}
+  \item{theta}{The coancestry coefficient}
+  \item{n}{The number of profiles in the database}
+  \item{relatives}{A vector of length 4. Determining the number of PAIRS
+  of profiles in the database: (FULL-SIBLINGS, FIRST-COUSINS,
+  PARENT-CHILD, AVUNCULAR). They should obey that 2*sum(relatives)<=n.}
+}
+\details{
+  Simulates a DNA database with a given number of DNA profiles (and
+  possibly relatives) with a correlation between profiles governed by
+  theta. 
+}
+\value{
+  A data frame where each row represents a DNA profile. The first column
+  is a profile identifier (id) and the next 2*L columns contains the
+  simulated genotype for each of the L loci. L is determined by the
+  length of the list 'probs' with allele probabilities 
+}
+  
+\author{James Curran and Torben Tvedebrink}
+
+\examples{
+  \dontrun{
+  ## Simulate some allele frequencies:
+  freq <-  replicate(10, { g = rgamma(n=10,scale=4,shape=3); g/sum(g)}, simplify=FALSE)
+  ## Simulate a single database with 5000 DNA profiles:
+  simdb <- dbSimulate(freq,theta=0.03,n=5000)
+  ## Simulate a number of databases, say N=50. For each database compute the summary statistic using dbCompare:
+  N <- 50
+  Msummary <- matrix(0,N,(length(freq)+1)*(length(freq)+2)/2)
+  for(i in 1:N) Msummary[i,] <- dbCompare(dbSimulate(freq,theta=0.03,n=1000),vector=TRUE,trace=FALSE)$m
+  ## Give the columns  representative names:
+  dimnames(Msummary)[[2]] <- DNAtools:::dbCats(length(freq),vector=TRUE)
+  ## Plot the simulations using a boxplot
+  boxplot(log10(Msummary))
+  ## There might come some warnings due to taking log10 to zero-values (no counts)
+  ## Add the expected number to the plot:
+  points(1:ncol(Msummary),log10(dbExpect(freq,theta=0.03,n=1000,vector=TRUE)),col=2,pch=16)
+  }
+}
+
+

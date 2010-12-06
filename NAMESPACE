@@ -1,0 +1,3 @@
+useDynLib(DNAtools)
+export(dbCompare,dbExpect,dbVariance,plot.dbcompare,print.dbcompare,optim.relatedness,print.dbOptim,plot.dbOptim,points.dbOptim,lines.dbOptim,dbSimulate,freqEst)
+

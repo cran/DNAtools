@@ -1,0 +1,45 @@
+citHeader("To cite DNAtools in publications please use:")
+
+## R >= 2.8.0 passes package metadata to citation().
+if(!exists("meta") || is.null(meta)) meta <- packageDescription("DNAtools")
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+
+citEntry(entry = "Article",
+  title        = "Analysis of matches and partial-matches in Danish DNA reference profile database",
+  author       = personList(as.person("Torben Tvedebrink"),
+                            as.person("P. S. Eriksen"),
+			    as.person("J. Curran"), 
+                            as.person("H. S. Mogensen"),
+                            as.person("N. Morling")),
+  journal      = "Forensic Science International: Genetics",
+  year         = "2011",
+  note         = "Submitted",
+
+  textVersion  =
+  paste("Torben Tvedebrink, PS Eriksen, J Curran, HS Mogensen and N Morling (2011).",
+        "Analysis of matches and partial-matches in Danish DNA reference profile database.",
+        "Forensic Science International: Genetics, Submitted")
+)
+
+
+citEntry(entry = "Manual",
+         title = "DNAtools: Tools for analysing forensic genetic DNA data",
+         author = personList(as.person("Torben Tvedebrink"),as.person("James Curran")),
+         year = year,
+         note = note,
+         url = "http://CRAN.R-project.org/package=DNAtools",
+
+         textVersion =
+         paste("Torben Tvedebrink and James Curran",
+   	       sprintf("(%s).", year),	 
+               "DNAtools: Tools for analysing forensic genetic DNA data.",
+	       paste(note, ".", sep = ""),
+               "URL http://CRAN.R-project.org/package=DNAtools"),
+	 header = "and/or"
+)
+
+
+
+

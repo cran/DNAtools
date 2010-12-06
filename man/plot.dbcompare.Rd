@@ -1,0 +1,37 @@
+\name{plot.dbcompare}
+\alias{plot.dbcompare}
+\title{Plots the summary matrix}
+\description{
+  Plots the summary matrix with counts on y-axis and classification on x-axis.
+}
+\usage{
+plot.dbcompare(x,log="y",las=3,xlab="Match/Partial",ylab="Counts",...)
+}
+\arguments{
+  \item{x}{Summary matrix returned from dbcompare}
+  \item{log}{Specifies whether log(Counts) should be plotted (default)}
+  \item{las}{Direction of the labels on x-axis. Default is 3 which gives perpendicular labels}
+  \item{xlab}{Axis label}
+  \item{ylab}{Axis label}
+  \item{...}{Other plot options}
+}
+\details{
+  Plots the summary matrix
+}
+\value{
+  A plot of the summary matrix. The counts are on log10 scale and the
+  x-axis is labeled by appropriate matching/partially-matching levels.
+}
+
+\seealso{dbCompare,print.dbcompare}
+
+\author{James Curran and Torben Tvedebrink}
+
+\examples{
+  \dontrun{
+  data(dbExample)
+  M = dbCompare(dbExample,hit=5)
+  plot(M)
+  }
+}
+
