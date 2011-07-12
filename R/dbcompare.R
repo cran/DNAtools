@@ -1,8 +1,9 @@
 dbCompare <- function(x,profile=NULL,hit=7,trace=TRUE,vector=FALSE){
+  for(i in 1:ncol(x)) x[,i] <- paste(x[,i])
   nl <- (ncol(x)-1)/2
   if(!is.null(profile)){
     nx <- names(x)
-    ## The length of the profile is even, no id given:
+    ## The length of the profile is odd, no id given:
     if((length(profile)%%2)==0) profile <- c("profile",paste(profile))
     names(profile) <- nx
     x <- rbind(paste(profile),x)

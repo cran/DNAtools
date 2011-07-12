@@ -232,7 +232,8 @@ SEXP compare(SEXP db, SEXP param) {
       if(m2>=hit){
 // 	prof1.push_back(pProf1->m_strName);
 // 	prof2.push_back(pProf2->m_strName);
-	row1.push_back(i+1);
+	if(single==1) row1.push_back(1); // Always first row when making comparisons to a given profile
+	else row1.push_back(i+1);
 	row2.push_back(j+1);
 	match.push_back(m2);
 	partial.push_back(m1);
