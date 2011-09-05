@@ -1,3 +1,16 @@
+## Collapses a (m,p)-matrix to a (2*m+p)-vector
+mpcollapse <- function(mallele,nloci){
+  tmp <- data.frame(m2 = (m <- floor(mallele/2):0),m1=mallele-2*m)
+  tmp[tmp$m1<=nloci & tmp$m2<=nloci,]
+}
+
+dbCollapse <- function(mpmatrix){
+  res <- sapply(1:((nL <- (ncol(mpmatrix)-1))*2+1),function(i) sum(diag(mpmatrix[(MP <- mpcollapse(i-1,nL))$m2+1,,drop=FALSE][,MP$m1+1,drop=FALSE]),na.rm=TRUE))
+  names(res) <- 0:(length(res)-1)
+  res
+}
+
+
 ## Extracts the upper left triangle of a quadratic matrix
 up.tri <- function(x,diag=TRUE,droplast=FALSE){
   x <- as.matrix(x)
@@ -50,11 +63,16 @@ Ps <- function(p,t,k=rep(0,3)){
 }
 
 ## Computes and returns the expected value of the cell counts
-dbExpect <- function(probs,theta=0.03,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE){
+dbExpect <- function(probs,theta=0.03,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,collapse=FALSE){
   if(length(theta)>1) return(lapply(theta,function(t) dbExpect(probs=probs,theta=t,k=k,n=n,round=round,na=na,vector=vector)))
   ## probs is a list of vectors with each vector being
   ## the allele probabilities for a given locus
   S <- length(probs)
+  if(is.character(k)){
+    if(!is.na(match(toupper(k),c("UN","AV","FS","FC","PC"))))
+      k <- list("UN"=c(0,0,1),"FC"=c(0,1,3)/4,"AV"=c(0,1,1)/2,"PC"=c(0,1,0),"FS"=c(1,2,1)/4)[[toupper(k)]]
+    else stop(paste("The value of 'k' (",k,") is not defined - has to be vector c(k2,k1,k0) or string: 'UN' (unrelated), 'FS' (full-siblings), 'AV' (avuncular), 'FC' (first cousins) or 'PC' (parent-child)",sep=""))
+  }
   p <- lapply(probs,Ps,t=theta,k=k)
   q <- do.call("cbind",p)
   if(n>1) N <- choose(n,2) else N <- 1
@@ -62,6 +80,7 @@ dbExpect <- function(probs,theta=0.03,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=
   if(round) res <- round(res*N)
   else res <- res*N
   if(na) res[!up.tri(res)] <- NA
+  if(collapse) return(dbCollapse(res))
   if(vector){
     res <- t(res)[up.tri(res)]
     names(res) <- dbCats(S,vector=TRUE)

@@ -12,7 +12,7 @@
   0,...,L-m, where m is the number of matching loci.
 }
 \usage{
-dbExpect(probs,theta=0.03,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE)
+dbExpect(probs,theta=0.03,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,collapse=FALSE)
 }
 \arguments{
   \item{probs}{List of vectors with allele probabilities for each locus}
@@ -24,7 +24,10 @@ dbExpect(probs,theta=0.03,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE)
   \item{round}{Whether or not the results should be rounded or not}
   \item{na}{Whether or not the off-elements should be returned as 0 or NA}
   \item{vector}{Whether or not the result should be returned as a matrix
-    or vector}
+    or vector. Note if 'collapse' is TRUE vector is ignored.}
+  \item{collapse}{Logical (default FALSE). If TRUE the
+    (m,p)-matrix will be collapased into a (2*m+p)-vector containing the
+    total number of matching alleles.}
 }
 \details{
   Computes the expected cell counts using a recursion formula. See

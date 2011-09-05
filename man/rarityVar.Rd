@@ -18,7 +18,7 @@
   } 
 }
 \usage{
-dbVariance(probs,theta=0.03,n=1)
+dbVariance(probs,theta=0.03,n=1,collapse=FALSE)
 }
 \arguments{
   \item{probs}{List of vectors with allele probabilities for each locus}
@@ -30,6 +30,9 @@ dbVariance(probs,theta=0.03,n=1)
     list of the components for computing the variance is returned. That
     is, the variance and two covariances on the right hand side of the
     equation above.}
+  \item{collapse}{Logical, default FALSE. If TRUE the covariance matrix
+    is collapsed such that it relates to (2*m+p)-vectors of total number
+    of matching alleles rather than (m,p)-matrix.}
 }
 \details{
   Computes the covariance matrix of the cell counts using a recursion

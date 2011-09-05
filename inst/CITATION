@@ -15,12 +15,14 @@ citEntry(entry = "Article",
                             as.person("N. Morling")),
   journal      = "Forensic Science International: Genetics",
   year         = "2011",
-  note         = "Submitted",
+  doi 	       = "10.1016/j.fsigen.2011.08.001",
+  note         = "In Press",
 
   textVersion  =
   paste("Torben Tvedebrink, PS Eriksen, J Curran, HS Mogensen and N Morling (2011).",
         "Analysis of matches and partial-matches in Danish DNA reference profile database.",
-        "Forensic Science International: Genetics, Submitted")
+        "Forensic Science International: Genetics, In Press.", 
+	"DOI: 10.1016/j.fsigen.2011.08.001")
 )
 
 

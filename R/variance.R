@@ -1,3 +1,27 @@
+## Input: Variance matrix (or list of them). Output: Collapsed versions
+varCollapse <- function(x,nl){
+  if(is.list(x)){
+    colx <- replicate(length(x),matrix(0,2*nl+1,2*nl+1),simplify=FALSE)
+    names(colx) <- names(x)
+  }
+  else colx <- matrix(0,2*nl+1,2*nl+1)
+  for(i in 0:nl){
+    for(j in 0:(nl-i)){
+      for(l in 0:nl){
+        for(k in 0:(nl-l)){
+          if(is.list(x)){
+            for(n in 1:length(x)){
+              colx[[n]][2*i+j+1,2*l+k+1] <- colx[[n]][2*i+j+1,2*l+k+1]+x[[n]][m2v(i=i+1,j=j+1,L=nl),m2v(i=l+1,j=k+1,L=nl)]
+            }
+          }
+          else colx[2*i+j+1,2*l+k+1] <- colx[2*i+j+1,2*l+k+1]+x[m2v(i=i+1,j=j+1,L=nl),m2v(i=l+1,j=k+1,L=nl)]
+        }
+      }
+    }
+  }
+  colx
+}
+
 ## Updates alpha (the potens of the ps) which is used by Sa
 updateAlpha <- function(a){
   aa <- replicate(length(a)-1,a[-length(a)],simplify=FALSE)
@@ -358,7 +382,7 @@ rareVar <- function(qu){ #(q,u){
   list(E3=x,E4=y)
 }
 
-dbVariance <-  function(probs,theta=0.03,n=1){
+dbVariance <-  function(probs,theta=0.03,n=1,collapse=FALSE){
   EEs <- EE.list(probs,t=theta)
   ##  Es <- rareVar(q=lapply(q,PsVar3,t=theta),u=lapply(q,PsVar4,t=theta))
   if(length(theta)>1){
@@ -371,6 +395,7 @@ dbVariance <-  function(probs,theta=0.03,n=1){
       V3 <- Es$E4 - E%*%t(E)
       if(n==1) V[[t]] <- list(V1=V1,V2=V2,V3=V3)
       else V[[t]] <- choose(n,2)*V1 + 6*choose(n,3)*V2 + 6*choose(n,4)*V3
+      if(collapse) V[[t]] <- varCollapse(V[[t]],nl=length(probs))
     }
     names(V) <- paste(theta)
   }
@@ -382,6 +407,7 @@ dbVariance <-  function(probs,theta=0.03,n=1){
     V3 <- Es$E4 - E%*%t(E)
     if(n==1) V <- list(V1=V1,V2=V2,V3=V3)
     else V <- choose(n,2)*V1 + 6*choose(n,3)*V2 + 6*choose(n,4)*V3
+    if(collapse) V <- varCollapse(V,nl=length(probs))
   }
   V
 }
