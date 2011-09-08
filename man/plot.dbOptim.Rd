@@ -8,9 +8,9 @@
   Plots the minimised object function for included values of theta
 }
 \usage{
-plot.dbOptim(x,type="l",...)
-points.dbOptim(x,type="p",...)
-lines.dbOptim(x,type="l",...)
+\method{plot}{dbOptim}(x,type="l",...)
+\method{points}{dbOptim}(x,type="p",...)
+\method{lines}{dbOptim}(x,type="l",...)
 }
 \arguments{
   \item{x}{Object returned by optim.relatedness}

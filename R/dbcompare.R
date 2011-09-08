@@ -1,4 +1,4 @@
-dbCompare <- function(x,profile=NULL,hit=7,trace=TRUE,vector=FALSE,collapse=FALSE,singleCore=FALSE){
+dbCompare <- function(x,profile=NULL,hit=7,trace=TRUE,vector=FALSE,collapse=FALSE,threads=2){
   for(i in 1:ncol(x)) x[,i] <- paste(x[,i])
   nl <- (ncol(x)-1)/2
   if(!is.null(profile)){
@@ -14,8 +14,8 @@ dbCompare <- function(x,profile=NULL,hit=7,trace=TRUE,vector=FALSE,collapse=FALS
   ids <- unlist(x[,1])
   nid <- names(x)[1]
   x <- do.call("paste",c(x=x,sep="\t"))
-  if(singleCore) res <- .Call("compare", x, c(as.integer(nl),as.integer(hit),as.integer(progress),as.integer(single)), PACKAGE = "DNAtools")
-  else res <- .Call("mcompare", x, c(as.integer(nl),as.integer(hit),as.integer(progress),as.integer(single)), PACKAGE = "DNAtools")
+  if(threads==1) res <- .Call("compare", x, c(as.integer(nl),as.integer(hit),as.integer(progress),as.integer(single)), PACKAGE = "DNAtools")
+  else res <- .Call("mcompare", x, c(as.integer(nl),as.integer(hit),as.integer(progress),as.integer(single),as.integer(threads)), PACKAGE = "DNAtools")
   result <- list(m=matrix(res$M,nl+1,nl+1,byrow=TRUE,dimnames=list(match=0:nl,partial=0:nl)))
   call <- list(loci=nl,single=single,collapse=collapse)
   if(length(res$row1)>0){

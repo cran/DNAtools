@@ -5,7 +5,7 @@
   Prints the summary matrix and possible "big hits". 
 }
 \usage{
-print.dbcompare(x,...)
+\method{print}{dbcompare}(x,...)
 }
 \arguments{
   \item{x}{Summary matrix returned from dbcompare}

@@ -6,7 +6,7 @@
   of alpha and possibly list of variances. 
 }
 \usage{
-print.dbOptim(x,var.list=FALSE,...)
+\method{print}{dbOptim}(x,var.list=FALSE,...)
 }
 \arguments{
   \item{x}{Object returned by optim.relatedness()}

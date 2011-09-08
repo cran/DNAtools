@@ -5,7 +5,7 @@
   Compare DNA profiles
 }
 \usage{
-dbCompare(x, profile=NULL, hit=7, trace=TRUE, vector=FALSE, collapse=FALSE, singleCore=FALSE)
+dbCompare(x, profile=NULL, hit=7, trace=TRUE, vector=FALSE, collapse=FALSE, threads=2)
 }
 \arguments{
   \item{x}{Database with DNA profiles. The database format is expected
@@ -22,9 +22,10 @@ dbCompare(x, profile=NULL, hit=7, trace=TRUE, vector=FALSE, collapse=FALSE, sing
   \item{collapse}{Logical (default FALSE). If TRUE the
     (m,p)-matrix will be collapased into a (2*m+p)-vector containing the
     total number of matching alleles.}
-  \item{singleCore}{Logical (default FALSE). If TRUE the comparisons are
-    carried out using multiple CPUs (if available) for increased
-    computation time. NOTE: Not available on Windows operating systems.}
+  \item{threads}{The number of threads to use for performing comparisons 
+    in parallel for increased computation time. Use 0 for using the 
+    same number as the computer has CPU cores. NOTE: Only available on 
+    Linux and MacOS operating systems.}
 }
 \details{
   Computes the distance between DNA profiles in terms of matching and

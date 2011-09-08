@@ -1,3 +1,4 @@
+
 #include <stdlib.h>
 #include <iostream>
 #include <string>
@@ -8,22 +9,21 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-#ifdef _WIN32
-// Nothing here
-#elif MACOS
+
+#ifdef MACOS
 #define DBCOMPARE_MULTICORE
 #include <sys/param.h>
 #include <sys/sysctl.h>
-#else
+#elif __linux__
 #define DBCOMPARE_MULTICORE
 #include <unistd.h>
+#else // Windows, Solaris, BSD etc.
+// Nothing here
 #endif
 
 // From http://stackoverflow.com/questions/150355/programmatically-find-the-number-of-cores-on-a-machine
 int getNumCores() {
-#ifdef WIN32
-	return 1;
-#elif MACOS
+#ifdef MACOS
 	int nm[2];
 	size_t len = 4;
 	uint32_t count;
@@ -38,8 +38,10 @@ int getNumCores() {
 	}
 
 	return count;
-#else
+#elif __linux__
 	return sysconf(_SC_NPROCESSORS_ONLN);
+#else
+  return 1;
 #endif
 }
 
@@ -192,7 +194,7 @@ void *compare_profiles(void *threadarg) {
 	double dA1, dA2, dB1, dB2;
 	
 	int m_size = (nLoci+1)*(nLoci+1);
-
+	
 	SEXP local_m;
   PROTECT(local_m = allocVector(INTSXP, m_size));
 	
@@ -294,7 +296,7 @@ SEXP compare(SEXP db, SEXP param) {
 
   vector<Profile*> vpProfiles;
   int nProfiles = DB.size();
-  
+
   string strLine;
 
   int nLoc;
@@ -473,15 +475,25 @@ SEXP mcompare(SEXP db, SEXP param) {
 	#ifndef DBCOMPARE_MULTICORE
 	return compare(db, param);
 	#else
+	
 	StringVector DB(db);
 
 	int nLoci = INTEGER(param)[0];
 	int hit = INTEGER(param)[1];
 	int trace = INTEGER(param)[2];
 	int single = INTEGER(param)[3];
+	int threads = INTEGER(param)[4];
+
+  if (threads == 1) {
+		return compare(db, param);
+	}
 	
 	int number_of_threads = getNumCores();
 	//number_of_threads = 1;
+	
+	if (threads > 0 && threads <= number_of_threads) { // fewer threads than cores requested
+		number_of_threads = threads;
+	}
 
 	vector<Profile*> vpProfiles;
 	int nProfiles = DB.size();
@@ -586,7 +598,7 @@ SEXP mcompare(SEXP db, SEXP param) {
 		exit(1);
 	}
 
-	vector<pthread_t> threads;
+	vector<pthread_t> threads_container;
 	thread_data *mthread_data;
 
 	int i_row = 0;
@@ -614,7 +626,7 @@ SEXP mcompare(SEXP db, SEXP param) {
 		
 		pthread_t thr;
 		rc = pthread_create(&thr, NULL, compare_profiles, (void *) mthread_data);
-		threads.push_back(thr);
+		threads_container.push_back(thr);
 
 		if (rc) {
 			fprintf(stderr, "Error in thread creation: %i.\n", rc);
@@ -623,7 +635,7 @@ SEXP mcompare(SEXP db, SEXP param) {
 	}
 
 	int progress_set = 0;
-	long comp_div = comps/100;
+	long unsigned comp_div = comps/100;
 
 	if(nProfiles>=15 && trace==1){
 		for(;;) {
@@ -657,7 +669,7 @@ SEXP mcompare(SEXP db, SEXP param) {
 	}
 
 	for(j=0; j<number_of_threads; j++){
-		rc = pthread_join(threads[j], (void **)&status);
+		rc = pthread_join(threads_container[j], (void **)&status);
 
 		if (rc) {
 			fprintf(stderr, "Error in thread joining: %i.\n", rc);
