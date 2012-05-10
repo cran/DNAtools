@@ -9,7 +9,7 @@
   profiles the correlation is only modelled by theta.
 }
 \usage{
-dbSimulate(probs,theta=0.03,n=1000,relatives=NULL)
+dbSimulate(probs,theta=0,n=1000,relatives=NULL)
 }
 \arguments{
   \item{probs}{List of allele probabilities, where each element in the
@@ -39,18 +39,18 @@ dbSimulate(probs,theta=0.03,n=1000,relatives=NULL)
   ## Simulate some allele frequencies:
   freq <-  replicate(10, { g = rgamma(n=10,scale=4,shape=3); g/sum(g)}, simplify=FALSE)
   ## Simulate a single database with 5000 DNA profiles:
-  simdb <- dbSimulate(freq,theta=0.03,n=5000)
+  simdb <- dbSimulate(freq,theta=0,n=5000)
   ## Simulate a number of databases, say N=50. For each database compute the summary statistic using dbCompare:
   N <- 50
   Msummary <- matrix(0,N,(length(freq)+1)*(length(freq)+2)/2)
-  for(i in 1:N) Msummary[i,] <- dbCompare(dbSimulate(freq,theta=0.03,n=1000),vector=TRUE,trace=FALSE)$m
+  for(i in 1:N) Msummary[i,] <- dbCompare(dbSimulate(freq,theta=0,n=1000),vector=TRUE,trace=FALSE)$m
   ## Give the columns  representative names:
   dimnames(Msummary)[[2]] <- DNAtools:::dbCats(length(freq),vector=TRUE)
   ## Plot the simulations using a boxplot
   boxplot(log10(Msummary))
   ## There might come some warnings due to taking log10 to zero-values (no counts)
   ## Add the expected number to the plot:
-  points(1:ncol(Msummary),log10(dbExpect(freq,theta=0.03,n=1000,vector=TRUE)),col=2,pch=16)
+  points(1:ncol(Msummary),log10(dbExpect(freq,theta=0,n=1000,vector=TRUE)),col=2,pch=16)
   }
 }
 

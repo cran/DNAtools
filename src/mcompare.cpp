@@ -46,10 +46,16 @@ int getNumCores() {
 }
 
 void my_usleep() {
-#ifndef WIN32
-	usleep(500000);
+#if defined MACOS || defined __linux__ 
+    usleep(500000);
 #endif
-}
+} 
+
+// void my_usleep() {
+// #ifndef WIN32
+// 	usleep(500000);
+// #endif
+// }
 
 extern "C" { // begin extern
 
@@ -169,11 +175,11 @@ void *compare_profiles(void *threadarg) {
 	pthread_mutex_t* change_lock = my_data->change_lock;
 	pthread_mutex_t* i_queue_lock = my_data->i_queue_lock;
 
-	int id = my_data->id;
+	//HER:	int id = my_data->id;
 	int nProfiles = my_data->nProfiles;
 	int nLoci = my_data->nLoci;
 	int hit = my_data->hit;
-	int trace = my_data->trace;
+	//HER:	int trace = my_data->trace;
 	int single = my_data->single;
 	long unsigned *stepper = my_data->stepper;
 	vector<Profile*> *vpProfiles = my_data->vpProfiles;
@@ -565,7 +571,7 @@ SEXP mcompare(SEXP db, SEXP param) {
 		t++;
 	}
 
-	int i, j, m1, m2;
+	int i, j; 	//HER:, m1, m2;
 
 	SEXP m;
 	PROTECT(m = allocVector(INTSXP, (nLoci+1)*(nLoci+1)));
@@ -578,9 +584,9 @@ SEXP mcompare(SEXP db, SEXP param) {
 	vector<int> match;
 	vector<int> partial;
 
-	double dA1, dA2, dB1, dB2;
+	//HER:	double dA1, dA2, dB1, dB2;
 
-	Profile *pProf2;
+	//HER:	Profile *pProf2;
 
 	vector<thread_data> thread_data_array;
 
@@ -589,13 +595,17 @@ SEXP mcompare(SEXP db, SEXP param) {
 	pthread_mutex_t i_queue_lock;
 
 	if (pthread_mutex_init(&change_lock, NULL)) {
-		fprintf(stderr, "Could not initialize change_lock mutex, aborting.\n");
-		exit(1);
+	  // REprintf("Could not initialize change_lock mutex, aborting.\n");
+	  // fprintf(stderr, "Could not initialize change_lock mutex, aborting.\n");
+	  error("Could not initialize change_lock mutex, aborting.\n"); 
+	  // exit(1);
 	}
 
 	if (pthread_mutex_init(&i_queue_lock, NULL)) {
-		fprintf(stderr, "Could not initialize i_queue_lock mutex, aborting.\n");
-		exit(1);
+	  // REprintf("Could not initialize i_queue_lock mutex, aborting.\n");
+	  // fprintf(stderr, "Could not initialize i_queue_lock mutex, aborting.\n");
+	  error("Could not initialize i_queue_lock mutex, aborting.\n"); 
+	  // exit(1);
 	}
 
 	vector<pthread_t> threads_container;
@@ -629,8 +639,10 @@ SEXP mcompare(SEXP db, SEXP param) {
 		threads_container.push_back(thr);
 
 		if (rc) {
-			fprintf(stderr, "Error in thread creation: %i.\n", rc);
-			exit(-1);
+		  // REprintf("Error in thread creation: %i.\n", rc);
+		  // fprintf(stderr, "Error in thread creation: %i.\n", rc);
+		  error("Error in thread creation");
+		  // exit(-1);
 		}
 	}
 
@@ -672,8 +684,10 @@ SEXP mcompare(SEXP db, SEXP param) {
 		rc = pthread_join(threads_container[j], (void **)&status);
 
 		if (rc) {
-			fprintf(stderr, "Error in thread joining: %i.\n", rc);
-			exit(-1);
+		  // REprintf("Error in thread joining: %i.\n", rc); 
+		  // fprintf(stderr, "Error in thread joining: %i.\n", rc);
+		  error("Error in thread joining"); 
+		  // exit(-1);
 		}
 	}
 

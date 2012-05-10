@@ -63,8 +63,9 @@ Ps <- function(p,t,k=rep(0,3)){
 }
 
 ## Computes and returns the expected value of the cell counts
-dbExpect <- function(probs,theta=0.03,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,collapse=FALSE){
+dbExpect <- function(probs,theta=0,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,collapse=FALSE){
   if(length(theta)>1) return(lapply(theta,function(t) dbExpect(probs=probs,theta=t,k=k,n=n,round=round,na=na,vector=vector)))
+  if(!is.list(probs) && is.vector(probs)) return(Ps(probs,t=theta,k=k)) ## Previous line handles if more thetas are provided
   ## probs is a list of vectors with each vector being
   ## the allele probabilities for a given locus
   S <- length(probs)

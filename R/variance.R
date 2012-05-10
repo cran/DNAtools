@@ -382,7 +382,7 @@ rareVar <- function(qu){ #(q,u){
   list(E3=x,E4=y)
 }
 
-dbVariance <-  function(probs,theta=0.03,n=1,collapse=FALSE){
+dbVariance <-  function(probs,theta=0,n=1,collapse=FALSE){
   EEs <- EE.list(probs,t=theta)
   ##  Es <- rareVar(q=lapply(q,PsVar3,t=theta),u=lapply(q,PsVar4,t=theta))
   if(length(theta)>1){

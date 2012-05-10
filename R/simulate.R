@@ -19,6 +19,7 @@ genTypeRec <- function(x,t,n,z=rep(0,lx <- length(x))){
 ## Generates DNA profiles of n individuals. These are formed as n/2 pairs for
 ## relatives with a IDB-vector given by k. I.e. the profiles are mutually unrelated between pairs.
 genRypeRec <- function(x,t,k,n,print=FALSE){
+  if(n==0) return(NULL)
   y <- numeric(0)
   a <- c(0,0)
   if(is.list(x)){ z <- x[[2]]; x <- x[[1]]; lx <- length(x); }
@@ -103,50 +104,86 @@ genRelated <- function(probs,theta=0,n,rel=c("FS"=0,"C"=0,"PC"=0,"A"=0,"U"=0)){
   if(!all((rel%%2)==0)) stop("not all 'rel' counts are even numbers")
   names(rel) <- c("FS","C","PC","A","U")
   dbn <- paste(rep(names(probs),each=2),1:2,sep=".")
-  odd <- seq(from=1,to=2*length(probs)-1,by=2)
-  if(rel[["U"]]<2) db.u <- NULL
-  else{
-    ## Unrelated: (k0,k1,k2) = c(1,0,0)
-    db.u <- as.data.frame(do.call("cbind",lapply(probs,genTypeRec,t=theta,n=rel[["U"]]))) 
-    names(db.u) <- dbn
-  }
-  db <- db.u
-  if(rel[["FS"]]<2) db.fs <- NULL
-  else {
-    ## Full-sibs: (k0,k1,k2) = c(1,2,1)/4
-    z <- countAlleles(db,p=probs)
-    db.fs <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(1,2,1)/4,n=rel[["FS"]]))) 
+  ## Unrelated: (k0,k1,k2) = c(1,0,0)
+  db <- as.data.frame(do.call("cbind",lapply(probs,genTypeRec,t=theta,n=rel[["U"]]))) 
+  names(db) <- dbn
+  ## Full-sibs: (k0,k1,k2) = c(1,2,1)/4
+  z <- countAlleles(db,p=probs)
+  if(nrow(db.fs <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(1,2,1)/4,n=rel[["FS"]]))))>0){
     names(db.fs) <- dbn
+    db <- rbind(db,db.fs)
   }
-  db <- rbind(db,db.fs)
-  if(rel[["C"]]<2) db.c <- NULL
-  else{
-    ## First cousins: (k0,k1,k2) = c(3,1,0)/4
-    z <- countAlleles(db,p=probs)
-    db.c <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(3,1,0)/4,n=rel[["C"]]))) 
+  ## First cousins: (k0,k1,k2) = c(3,1,0)/4
+  z <- countAlleles(db,p=probs)
+  if(nrow(db.c <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(3,1,0)/4,n=rel[["C"]]))))>0){
     names(db.c) <- dbn
+    db <- rbind(db,db.c)
   }
-  db <- rbind(db,db.c)
-  if(rel[["PC"]]<2) db.pc <- NULL
-  else{
-    ## Parent-child: (k0,k1,k2) = c(0,1,0)
-    z <- countAlleles(db,p=probs)
-    db.pc <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(0,1,0),n=rel[["PC"]]))) 
+  ## Parent-child: (k0,k1,k2) = c(0,1,0)
+  z <- countAlleles(db,p=probs)
+  if(nrow(db.pc <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(0,1,0),n=rel[["PC"]]))))>0){
     names(db.pc) <- dbn
+    db <- rbind(db,db.pc)
   }
-  db <- rbind(db,db.pc)
-  if(rel[["A"]]<2) db.a <- NULL
-  else{
-    ## Avuncular: (k0,k1,k2) = c(1,1,0)/2
-    z <- countAlleles(db,p=probs)
-    db.a <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(1,1,0)/2,n=rel[["A"]]))) 
+  ## Avuncular: (k0,k1,k2) = c(1,1,0)/2
+  z <- countAlleles(db,p=probs)
+  if(nrow(db.a <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(1,1,0)/2,n=rel[["A"]]))))>0){
     names(db.a) <- dbn
+    db <- rbind(db,db.a)
   }
-  db <- rbind(db,db.a)
   cbind(id=1:n,db)
 }
 
-dbSimulate <- function(probs,theta=0.03,n=1000,relatives=NULL){
+
+## ## A wrapper function that generates a database with relatives included.
+## genRelated <- function(probs,theta=0,n,rel=c("FS"=0,"C"=0,"PC"=0,"A"=0,"U"=0)){
+##   if(!all((rel%%2)==0)) stop("not all 'rel' counts are even numbers")
+##   names(rel) <- c("FS","C","PC","A","U")
+##   dbn <- paste(rep(names(probs),each=2),1:2,sep=".")
+##   odd <- seq(from=1,to=2*length(probs)-1,by=2)
+##   if(rel[["U"]]<2) db.u <- NULL
+##   else{
+##     ## Unrelated: (k0,k1,k2) = c(1,0,0)
+##     db.u <- as.data.frame(do.call("cbind",lapply(probs,genTypeRec,t=theta,n=rel[["U"]]))) 
+##     names(db.u) <- dbn
+##   }
+##   db <- db.u
+##   if(rel[["FS"]]<2) db.fs <- NULL
+##   else {
+##     ## Full-sibs: (k0,k1,k2) = c(1,2,1)/4
+##     z <- countAlleles(db,p=probs)
+##     db.fs <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(1,2,1)/4,n=rel[["FS"]]))) 
+##     names(db.fs) <- dbn
+##   }
+##   db <- rbind(db,db.fs)
+##   if(rel[["C"]]<2) db.c <- NULL
+##   else{
+##     ## First cousins: (k0,k1,k2) = c(3,1,0)/4
+##     z <- countAlleles(db,p=probs)
+##     db.c <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(3,1,0)/4,n=rel[["C"]]))) 
+##     names(db.c) <- dbn
+##   }
+##   db <- rbind(db,db.c)
+##   if(rel[["PC"]]<2) db.pc <- NULL
+##   else{
+##     ## Parent-child: (k0,k1,k2) = c(0,1,0)
+##     z <- countAlleles(db,p=probs)
+##     db.pc <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(0,1,0),n=rel[["PC"]]))) 
+##     names(db.pc) <- dbn
+##   }
+##   db <- rbind(db,db.pc)
+##   if(rel[["A"]]<2) db.a <- NULL
+##   else{
+##     ## Avuncular: (k0,k1,k2) = c(1,1,0)/2
+##     z <- countAlleles(db,p=probs)
+##     db.a <- as.data.frame(do.call("cbind",lapply(lbind(probs,z),genRypeRec,t=theta,k=c(1,1,0)/2,n=rel[["A"]]))) 
+##     names(db.a) <- dbn
+##   }
+##   db <- rbind(db,db.a)
+##   cbind(id=1:n,db)
+## }
+
+dbSimulate <- function(probs,theta=0,n=1000,relatives=NULL){
   if(is.null(relatives)) return(genUnrelatedRec(probs,theta=theta,n=n))
   else{
     if(length(relatives)!=4)

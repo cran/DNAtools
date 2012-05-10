@@ -18,7 +18,7 @@
   } 
 }
 \usage{
-dbVariance(probs,theta=0.03,n=1,collapse=FALSE)
+dbVariance(probs,theta=0,n=1,collapse=FALSE)
 }
 \arguments{
   \item{probs}{List of vectors with allele probabilities for each locus}
@@ -56,9 +56,9 @@ dbVariance(probs,theta=0.03,n=1,collapse=FALSE)
   ## List of elements needed to compute the covariance matrix.
   ## Useful option when the covariance needs to be computed for varying
   ## database sizes but for identical theta-value.
-  comps <- dbVariance(freqs,theta=0.03,n=1)
+  comps <- dbVariance(freqs,theta=0,n=1)
   ## Covariance for a DB with 1000 DNA profiles
-  cov1000 <- dbVariance(freqs,theta=0.03,n=1000)
+  cov1000 <- dbVariance(freqs,theta=0,n=1000)
   ## The result is the same as:
   comps1000 <- choose(1000,2)*comps$V1 + 6*choose(1000,3)*comps$V2 + 6*choose(1000,4)*comps$V3
   }

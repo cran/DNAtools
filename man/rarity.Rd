@@ -12,7 +12,7 @@
   0,...,L-m, where m is the number of matching loci.
 }
 \usage{
-dbExpect(probs,theta=0.03,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,collapse=FALSE)
+dbExpect(probs,theta=0,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,collapse=FALSE)
 }
 \arguments{
   \item{probs}{List of vectors with allele probabilities for each locus}
@@ -48,7 +48,7 @@ dbExpect(probs,theta=0.03,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,collap
   ## Simulate some allele frequencies:
   freqs <-  replicate(10, { g = rgamma(n=10,scale=4,shape=3); g/sum(g)}, simplify=FALSE)
   ## Compute the expected number for a DB with 10000 profiles:
-  dbExpect(freqs,theta=0.03,n=10000)
+  dbExpect(freqs,theta=0,n=10000)
   } 
 }
 
