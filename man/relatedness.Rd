@@ -9,10 +9,12 @@
   parameter constraints.
 }
 \usage{
-optim.relatedness(obs,theta0=0,theta1=0.03,theta.tol=10^(-7),theta.step=NULL,max.bisect=15,
-                              probs,var.list=NULL,init.alpha=10^c(-4,-6,-8,-10),init.keep=FALSE,
-                              objFunction=c("T2","T1","C3","C2","C1"),collapse=FALSE,trace=FALSE,
-                              solnp.ctrl=list(tol=10^(-9),rho=10,delta=min(init.alpha)*0.01,trace=FALSE))
+optim.relatedness(obs,theta0=0,theta1=0.03,theta.tol=10^(-7),
+                  theta.step=NULL,max.bisect=15,probs,var.list=NULL,
+                  init.alpha=10^c(-4,-6,-8,-10),init.keep=FALSE,
+                  objFunction=c("T2","T1","C3","C2","C1"),collapse=FALSE,
+                  trace=FALSE,solnp.ctrl=list(tol=10^(-9),rho=10,
+                  delta=min(init.alpha)*0.01,trace=FALSE))
 }
 \arguments{
   \item{obs}{The matrix or vector of observed matches/partial-matches as
@@ -66,11 +68,13 @@ optim.relatedness(obs,theta0=0,theta1=0.03,theta.tol=10^(-7),theta.step=NULL,max
 \examples{
   \dontrun{
   ## Simulate some allele frequencies:
-  freqs <-  replicate(10, { g = rgamma(n=10,scale=4,shape=3); g/sum(g)}, simplify=FALSE)
+  freqs <-  replicate(10, { g = rgamma(n=10,scale=4,shape=3); g/sum(g)},
+              simplify=FALSE)
   ## Load the sample database:
   data(dbExample)
   obs <- dbCompare(dbExample,trace=FALSE)$m
-  C3 <- optim.relatedness(obs,theta0=0.0,theta1=0.03,probs=freqs,objFunction="C3",max.bisect=30,trace=TRUE)
+  C3 <- optim.relatedness(obs,theta0=0.0,theta1=0.03,probs=freqs,
+          objFunction="C3",max.bisect=30,trace=TRUE)
   }
 }
 

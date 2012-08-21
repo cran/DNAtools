@@ -1,0 +1,33 @@
+\name{dbCollapse}
+\alias{dbCollapse}
+\title{Collapse m/p output to vector}
+\description{
+  Collapse a m/p-matrix from dbCompare/dbExpect to a vector.
+}
+\usage{
+dbCollapse(x)
+}
+\arguments{
+  \item{x}{Either a object of class "dbcompare" (result from dbCompare)
+    or "matrix".}
+}
+\details{
+  Collapse a m/p-matrix from dbCompare/dbExpect to a vector with entry i
+  being the sum of all entries from m/p-matrix satisfying 2*m+p=i.
+}
+\value{
+  A vector of length 2*max(m)+1 with entries begin the sum of entries i in
+  m/p-matrix satisfying i=2*m+p.
+}
+  
+\author{Torben Tvedebrink}
+
+\examples{
+  \dontrun{
+  data(dbExample)
+  res <- dbCompare(dbExample, hit=5, trace=TRUE)
+  dbCollapse(res) ## same as dbCompare(dbExample, hit=5, trace=TRUE, collapse=TRUE)
+  }
+}
+
+

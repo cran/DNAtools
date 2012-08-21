@@ -12,7 +12,8 @@
   0,...,L-m, where m is the number of matching loci.
 }
 \usage{
-dbExpect(probs,theta=0,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,collapse=FALSE)
+dbExpect(probs,theta=0,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,
+         collapse=FALSE,wildcard=FALSE)
 }
 \arguments{
   \item{probs}{List of vectors with allele probabilities for each locus}
@@ -28,6 +29,7 @@ dbExpect(probs,theta=0,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,collapse=
   \item{collapse}{Logical (default FALSE). If TRUE the
     (m,p)-matrix will be collapased into a (2*m+p)-vector containing the
     total number of matching alleles.}
+  \item{wildcard}{Should wildcards be used?}
 }
 \details{
   Computes the expected cell counts using a recursion formula. See
@@ -46,7 +48,8 @@ dbExpect(probs,theta=0,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,collapse=
 \examples{
   \dontrun{
   ## Simulate some allele frequencies:
-  freqs <-  replicate(10, { g = rgamma(n=10,scale=4,shape=3); g/sum(g)}, simplify=FALSE)
+  freqs <-  replicate(10, { g = rgamma(n=10,scale=4,shape=3); g/sum(g)},
+              simplify=FALSE)
   ## Compute the expected number for a DB with 10000 profiles:
   dbExpect(freqs,theta=0,n=10000)
   } 

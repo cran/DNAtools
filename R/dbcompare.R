@@ -1,41 +1,91 @@
-dbCompare <- function(x,profile=NULL,hit=7,trace=TRUE,vector=FALSE,collapse=FALSE,threads=2){
-  for(i in 1:ncol(x)) x[,i] <- paste(x[,i])
-  nl <- (ncol(x)-1)/2
-  if(!is.null(profile)){
+dbCompare <- function(x,profiles=NULL,hit=7,trace=TRUE,vector=FALSE,collapse=FALSE,wildcard=FALSE,wildcard.effect=FALSE,wildcard.impose=FALSE,threads=2){
+  if(all(wildcard,wildcard.effect)) stop("Only one wildcard option is allowed to be 'TRUE' at any time")
+  x.cp <- x ## Keep copy of input
+  ## Looks after amelogenin loci - and drop these
+  amel.candidate <- unlist(lapply(head(x,n=20),function(y) any(grepl("^(x|y|X|Y|xx|xy|XX|XY)$",paste(y)))))
+  x <- x[,!amel.candidate]
+  ## 
+  if(ncol(x)%%2!=0){ ## Unequal number of columns - assumes first col is identifier
+    id <- x[,1,drop=TRUE]
+    nid <- names(x)[1]
+    x <- x[,-1]
+  }
+  ## number of loci
+  nl <- ncol(x)/2
+  ## Converts all alleles to a*10, e.g. 9 -> 90 and 9.3 -> 93 (to deal with .1, .2 and .3 alleles)
+  for(i in 1:ncol(x)){
+    if(class(x[[i]])=="factor") x[[i]] <- paste(x[[i]])
+    x[[i]] <- as.numeric(x[[i]])*10
+    class(x[[i]]) <- "integer"
+  }
+  ## Specific profile(s) that should be compared to profiles in x
+  if(!is.null(profiles)){
     nx <- names(x)
-    ## The length of the profile is odd, no id given:
-    if((length(profile)%%2)==0) profile <- c("profile",paste(profile))
-    names(profile) <- nx
-    x <- rbind(paste(profile),x)
-    single <- 1
+    if(is.null(dim(profiles))) dim(profiles) <- c(1,length(profiles))
+    if(is.matrix(profiles)) profiles <- as.data.frame(profiles)
+    amel.candidate <- unlist(lapply(head(profiles,n=min(nrow(profiles),20)),function(y) any(grepl("^(x|y|X|Y|xx|xy|XX|XY)$",paste(y)))))
+    profiles <- profiles[,!amel.candidate]
+    if(ncol(profiles)==ncol(x)) names(profiles) <- nx
+    else{
+      id <- c(profiles[,1,drop=TRUE],id)
+      profiles <- structure(profiles[,-1],.Names=nx)
+    }
+    for(i in 1:ncol(profiles)){
+      if(class(profiles[[i]])=="factor") profiles[[i]] <- paste(profiles[[i]])
+      profiles[[i]] <- as.numeric(profiles[[i]])*10
+      class(profiles[[i]]) <- "integer"
+    }
+    x <- rbind(profiles,x)
+    single <- nrow(profiles) ## Number of profiles to compare with x // input for C++ code
   }
   else single <- 0
-  if(trace) progress <- 1 else progress <- 0
-  ids <- unlist(x[,1])
-  nid <- names(x)[1]
+  for(i in ((0:(nl-1))*2+1)){ ## Looks for situations where A[1]>A[2]: C++ code assumes A[1]<=A[2]
+    if(any(swap.index <- x[[i]]>x[[i+1]])){
+      x[swap.index,c(i,i+1)] <- x[swap.index,c(i+1,i)]
+    }
+    ## Force homs to have wildcards
+    if(wildcard.impose) x[[i]][x[[i]]==x[[i+1]]] <- 0
+  }
+  if(!wildcard){
+    ## If no wildcard is allowed, but the database contains "0" which is equivalent of "F" then these profiles are removed before comparison
+    x0 <- x[(xnull <- apply(x[,-1],1,function(y) any(y==0))),]
+    x <- x[!xnull,]
+  }
+  x.cp1 <- x ## Keep copy of x
   x <- do.call("paste",c(x=x,sep="\t"))
-  if(threads==1) res <- .Call("compare", x, c(as.integer(nl),as.integer(hit),as.integer(progress),as.integer(single)), PACKAGE = "DNAtools")
-  else res <- .Call("mcompare", x, c(as.integer(nl),as.integer(hit),as.integer(progress),as.integer(single),as.integer(threads)), PACKAGE = "DNAtools")
-  result <- list(m=matrix(res$M,nl+1,nl+1,byrow=TRUE,dimnames=list(match=0:nl,partial=0:nl)))
-  call <- list(loci=nl,single=single,collapse=collapse)
+  if(threads==1 | single>0){
+    if(threads>1) warning("Profiles argument only available for single CPU implementation - computations performed using single core")
+    res <- .Call("compare", x, c(as.integer(nl),as.integer(hit),as.integer(trace),as.integer(single),as.integer(wildcard),as.integer(wildcard.effect)), PACKAGE = "DNAtools")
+  }
+  else
+    res <- .Call("mcompare", x, c(as.integer(nl),as.integer(hit),as.integer(trace),as.integer(single),as.integer(threads),as.integer(wildcard),as.integer(wildcard.effect)), PACKAGE = "DNAtools")
+  if(wildcard.effect) result <- list(m=matrix(res$M,2*nl+1,2*nl+1,byrow=TRUE,dimnames=list(Genuine=0:(2*nl),Wildcard=0:(2*nl))))
+  else result <- list(m=matrix(res$M,nl+1,nl+1,byrow=TRUE,dimnames=list(match=0:nl,partial=0:nl)))
+  call <- list(loci=nl,single=single,collapse=collapse,vector=vector,wildcard=c(wildcard,wildcard.effect))
   if(length(res$row1)>0){
-    result <- c(result,list(hits=data.frame(id1=ids[res$row1],id2=ids[res$row2],
-                              match=res$matches,partial=res$partial)))
+    result <- c(result,list(hits=data.frame(id1=id[res$row1],id2=id[res$row2],match=res$matches,partial=res$partial)))
+    if(wildcard) result$hits <- cbind(result$hits,Fmatch=res$fmatches,Fpartial=res$fpartial)
     names(result$hits)[1:2] <- paste(nid,1:2,sep="")
     call <- c(call,list(hit=hit))
   }
-  if(collapse){
-    result$m <- dbCollapse(result$m)
-    names(result$m) <- 0:(length(result$m)-1)
+  else result$hits <- NULL
+  if(collapse) result$m <- structure(dbCollapse(result$m),.Names=0:(2*nl))
+  else if(vector) result$m <- structure(t(result$m)[up.tri(result$m)],
+                                        .Names=t(outer(dimnames(result$m)[[1]],dimnames(result$m)[[2]],paste,sep="/"))[up.tri(result$m)])
+  if(!wildcard){
+    if(nrow(x0)>0) result$excludedProfiles <- x0
+    else result$excludedProfiles <- "none"
   }
-  if(vector & !collapse) result$m <- t(result$m)[up.tri(result$m)]
   attributes(result)$call <- call
   attributes(result)$class <- "dbcompare"
   result
 }
 
 print.dbcompare <- function(x,...){
-  if(is.matrix(x$m)) x$m[!up.tri(x$m)] <- NA
+  if(is.matrix(x$m)){
+    if(attributes(x)$call$wildcard[2]) x$m[lower.tri(x$m)] <- NA
+    else x$m[!up.tri(x$m)] <- NA
+  }
   if(length(attributes(x)$names)==1){
     if(is.matrix(x$m)) print.table(x$m,...)
     else print.default(x$m,...)
@@ -49,10 +99,13 @@ print.dbcompare <- function(x,...){
       cat("Summary vector\n")
       print.default(x$m,...)
     }
-    cat(paste("\nProfiles with at least",attributes(x)$call$hit,"matching loci\n"))
-    x$hits <- x$hits[order(x$hits$match,x$hits$partial,decreasing=TRUE),]
-    rownames(x$hits) <- 1:nrow(x$hits)
-    print.data.frame(x$hits,...)
+    if(!is.null(x$hits)){
+      cat(paste("\nProfiles with at least",attributes(x)$call$hit,"matching loci\n"))
+      x$hits <- x$hits[with(x$hits,order(match,partial,decreasing=TRUE)),]
+      if("Fmatch" %in% names(x$hits)) x$hits <- x$hits[with(x$hits,order(match,partial,match,partial,decreasing=TRUE)),]
+      rownames(x$hits) <- 1:nrow(x$hits)
+      print.data.frame(x$hits,...)
+    }
   }
 }
 

@@ -3,48 +3,48 @@
 \alias{DNAtools}
 \docType{package}
 \title{
-Tools for analysing forensic genetic DNA data
+  Tools for analysing forensic genetic DNA databases
 }
 \description{
-Functions for making a database comparison exercise where each DNA
-profile is compared to any other in the database. Also has functions for
-optimising parameters of the population genetic model and for simulating
-DNA databases. 
+  Computational efficient tools for comparing all pairs of profiles in a
+  DNA database. The expectation and covariance of the summary statistic
+  is implemented for fast computing. Routines for estimating proportions
+  of close related individuals are available. The use of wildcards (also
+  called F-designation) is implemented. Dedicated functions ease
+  plotting the results.
 }
 \details{
-
-Index:
-\preformatted{
-dbCompare                                                   Compare DNA profiles
-dbExample                                                   Simulated database with 1,000 individuals
-dbExpect                                                    Expected value of cell counts in DNA database comparison
-dbSimulate                                                  Simulate a DNA database
-dbVariance                                                  Covariance matrix of cell counts in DNA database comparison
-optim.relatedness                                           Estimate theta and the fraction of comparisons between close relatives
-freqEst                                                     Simple allele frequency estimation
-plot.dbOptim                                                Plots the fitted object function for estimated familial relationships
-plot.dbcompare                                              Plots the summary matrix
-print.dbOptim                                               Prints the results from optim.relatedness()
-print.dbcompare                                             Prints the summary matrix
+\tabular{ll}{
+Package: \tab DNAtools\cr
+Type: \tab Package\cr
+Version: \tab 0.1\cr
+Date: \tab 2013-06-19\cr
+License: \tab GPL (>= 2)\cr
 }
+dbCompare: Compares make all n(n-1)/2 pairwise comparisons between
+profiles of a database with n DNA profiles.
+dbExpect: Computes the expected number of matching and partial matching
+loci for a given number of profiles in a database.
+dbVariance: Calculates the associated covariance matrix.
 }
 \author{
-Torben Tvedebrink and James Curran
+Torben Tvedebrink <tvede@math.aau.dk> and James Curran
+<j.curran@auckland.ac.nz> wrote the package. Mikkel Meyer Andersen
+<mikl@math.aau.dk> assisted on the multicore/CPU implementation.
 
 Maintainer: Torben Tvedebrink <tvede@math.aau.dk>
 }
 \references{
-  T Tvedebrink, PS Eriksen, J Curran, HS Mogensen, N Morling. 'Analysis
-  of matches and partial-matches in Danish DNA reference profile
-  database'. Forensic Science International: Genetics, 2011.
+  Tvedebrink T, JM Curran, PS Eriksen, HS Mogensen and N Morling (2012).
+  Analysis of matches and partial-matches in a Danish STR data set.
+  Forensic Science International: Genetics, 6(3): 387-392.
+
+  Read the vignette: \code{vigette("DNAtools")}
 }
-\keyword{ package }
+\keyword{ Forensic genetics }
 \examples{
-data(dbExample)
-freq <- freqEst(dbExample)
-M <- dbCompare(dbExample,trace=FALSE)
-plot(M)
-M.expect <- dbExpect(probs=freq,theta=0.0,n=nrow(dbExample),vector=TRUE)
-points(M.expect,col=2,pch=4)
-legend("topright",bty="n",pch=c(1,4),col=c(1,2),c("Observed", "Expected"))
+  \dontrun{
+  data(dbExample)
+  dbCompare(dbExample,hit=5,trace=TRUE)
+  }
 }

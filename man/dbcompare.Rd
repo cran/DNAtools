@@ -5,16 +5,19 @@
   Compare DNA profiles
 }
 \usage{
-dbCompare(x, profile=NULL, hit=7, trace=TRUE, vector=FALSE, collapse=FALSE, threads=2)
+dbCompare(x, profiles=NULL, hit=7, trace=TRUE, vector=FALSE, collapse=FALSE,
+          wildcard=FALSE, wildcard.effect=FALSE,wildcard.impose=FALSE,threads=2)
 }
 \arguments{
   \item{x}{Database with DNA profiles. The database format is expected
     to be a data frame with each column containing an allelic number
     such that for each DNA marker there are two columns in the data
     frame. See \code{data(dbExample)} for an example of the format.}
-  \item{profile}{A specific profile to be compared with all profiles in
-    the database. Input is a vector of same length as a row in the
-    database \code{x}.}
+  \item{profiles}{One or more profiles to be compared with all profiles in
+    the database. Input is a vector, matrix or data frame of same
+    length/width as a row in the database \code{x}.
+    If profiles is non-null only one CPU will be used. In case threads>1
+    a warning will be given but computations performed using single core.}
   \item{hit}{The number of matching loci for further investigation}
   \item{trace}{Shows a progress bar}
   \item{vector}{Logical. Whether the result should be returned as vector
@@ -26,6 +29,9 @@ dbCompare(x, profile=NULL, hit=7, trace=TRUE, vector=FALSE, collapse=FALSE, thre
     in parallel for increased computation time. Use 0 for using the 
     same number as the computer has CPU cores. NOTE: Only available on 
     Linux and MacOS operating systems.}
+  \item{wildcard}{Use the wildcard comparing.}
+  \item{wildcard.effect}{Compare result of wildcard and no wildcard.}
+  \item{wildcard.impose}{Force homozygouse profiles (aa) to have wildcard (aF).}
 }
 \details{
   Computes the distance between DNA profiles in terms of matching and
