@@ -12,8 +12,8 @@
   0,...,L-m, where m is the number of matching loci.
 }
 \usage{
-dbExpect(probs,theta=0,k=c(0,0,1),n=1,round=FALSE,na=TRUE,vector=FALSE,
-         collapse=FALSE,wildcard=FALSE)
+dbExpect(probs,theta=0,k=c(0,0,1),n=1,round=FALSE,na=TRUE,
+         vector=FALSE,collapse=FALSE,wildcard=FALSE)
 }
 \arguments{
   \item{probs}{List of vectors with allele probabilities for each locus}

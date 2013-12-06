@@ -1,22 +1,18 @@
 \documentclass[a4paper,11pt]{article}
 
-\usepackage{url,amsmath,graphicx,booktabs,array,natbib,a4wide}
+\usepackage{url,amsmath,graphicx,booktabs,array,natbib,a4wide,color,alltt,parskip}
 \usepackage{hyperref}
 %\usepackage{Sweave}
+
+\usepackage{Rd}  % mainly for upright quotes.
 
 \newcommand{\SGMplus}{AmpF\textit{l}STR\textsuperscript{\textregistered}
   SGM Plus\textsuperscript{\texttrademark}}
 
 \newcommand{\proglang}[1]{\textsf{#1}}
-\newcommand{\pkg}[1]{\textbf{#1}}
-\newcommand{\code}[1]{\texttt{#1}}
+% \newcommand{\pkg}[1]{\textbf{#1}}
+% \newcommand{\code}[1]{\texttt{#1}}
 
-\author{\begin{tabular}{c!{\hspace{10mm}}c}James M. Curran& Torben Tvedebrink \\University of
-  Auckland& Aalborg University\end{tabular}}
-\title{\pkg{DNAtools} : Tools for empirical testing of DNA match probabilities}
-\date{}
-
-\usepackage{color}
 \definecolor{Blue}{rgb}{0,0,0.8}
 
 \hypersetup{%
@@ -28,11 +24,18 @@ urlcolor=Blue,%
 pdfstartview==FitW,%
 pdfview={XYZ null null null},%
 %pdfpagemode=UseNone,%
+pdftitle={Forensic DNA database matching},
 pdfauthor={James M. Currand and Torben Tvedebrink}%
 }
 
 
 \begin{document}
+
+\author{\begin{tabular}{c!{\hspace{10mm}}c}James M. Curran& Torben Tvedebrink \\University of
+  Auckland& Aalborg University\end{tabular}}
+\title{\pkg{DNAtools} : Tools for empirical testing of DNA match probabilities}
+\maketitle
+\sloppy
 
 %\VignetteIndexEntry{Forensic genetics}
 %\VignetteDepends{DNAtools}

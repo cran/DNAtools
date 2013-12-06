@@ -11,7 +11,10 @@
   number of matching loci is 0,...,L and partial number of matches is
   0,...,L-m, where m is the number of matching loci. The expression is
   given by:
-  \deqn{latex}{%
+  \deqn{
+    {n\choose2}Var[M(G_{i_1},G_{i_2})] +
+    6{n\choose3}Cov[M(G_{i_1},G_{i_2}),M(G_{i_1},G_{i_3})] +
+    6{n\choose4}Cov[M(G_{i_1},G_{i_2}),M(G_{i_3},G_{i_4})]}{%
     Var(M) = {n\choose2}Var[M(G_{i_1},G_{i_2})] +
     6*{n\choose3}Cov[M(G_{i_1},G_{i_2}),M(G_{i_1},G_{i_3})] +
     6*{n\choose4}Cov[M(G_{i_1},G_{i_2}),M(G_{i_3},G_{i_4})]
@@ -52,7 +55,8 @@ dbVariance(probs,theta=0,n=1,collapse=FALSE)
 \examples{
   \dontrun{
   ## Simulate some allele frequencies:
-  freqs <-  replicate(10, { g = rgamma(n=10,scale=4,shape=3); g/sum(g)}, simplify=FALSE)
+  freqs <-  replicate(10,
+             { g = rgamma(n=10,scale=4,shape=3); g/sum(g)}, simplify=FALSE)
   ## List of elements needed to compute the covariance matrix.
   ## Useful option when the covariance needs to be computed for varying
   ## database sizes but for identical theta-value.
@@ -60,7 +64,8 @@ dbVariance(probs,theta=0,n=1,collapse=FALSE)
   ## Covariance for a DB with 1000 DNA profiles
   cov1000 <- dbVariance(freqs,theta=0,n=1000)
   ## The result is the same as:
-  comps1000 <- choose(1000,2)*comps$V1 + 6*choose(1000,3)*comps$V2 + 6*choose(1000,4)*comps$V3
+  comps1000 <- choose(1000,2)*comps$V1 + 6*choose(1000,3)*comps$V2 +
+                6*choose(1000,4)*comps$V3
   }
 }
 

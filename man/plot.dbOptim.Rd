@@ -25,7 +25,7 @@
   A plot of the object function
 }
 
-\seealso{optim.relatedness}
+\seealso{\code{\link{optim.relatedness}}}
 
 \author{James Curran and Torben Tvedebrink}
 

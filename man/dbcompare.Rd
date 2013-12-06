@@ -5,8 +5,9 @@
   Compare DNA profiles
 }
 \usage{
-dbCompare(x, profiles=NULL, hit=7, trace=TRUE, vector=FALSE, collapse=FALSE,
-          wildcard=FALSE, wildcard.effect=FALSE,wildcard.impose=FALSE,threads=2)
+dbCompare(x, profiles=NULL, hit=7, trace=TRUE, vector=FALSE,
+          collapse=FALSE, wildcard=FALSE, wildcard.effect=FALSE,
+          wildcard.impose=FALSE,threads=2)
 }
 \arguments{
   \item{x}{Database with DNA profiles. The database format is expected

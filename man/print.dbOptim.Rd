@@ -21,7 +21,9 @@
   A dataframe with [theta,value] and a vector of fitted alpha parameters 
 }
 
-\seealso{optim.relatedness}
+\seealso{
+  \code{\link{optim.relatedness}}
+}
 
 \author{James Curran and Torben Tvedebrink}
 

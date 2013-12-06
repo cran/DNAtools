@@ -18,7 +18,7 @@
   Prints the summary matrix and data frame with "big hits"
 }
 
-\seealso{dbCompare,plot.dbcompare}
+\seealso{\code{\link{dbCompare}}, \code{\link{plot.dbcompare}}}
 
 \author{James Curran and Torben Tvedebrink}
 

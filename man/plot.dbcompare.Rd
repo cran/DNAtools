@@ -23,7 +23,7 @@
   x-axis is labeled by appropriate matching/partially-matching levels.
 }
 
-\seealso{dbCompare,print.dbcompare}
+\seealso{\code{\link{dbCompare}},\code{\link{print.dbcompare}}}
 
 \author{James Curran and Torben Tvedebrink}
 
