@@ -12,8 +12,9 @@
   0,...,L-m, where m is the number of matching loci.
 }
 \usage{
-dbExpect(probs,theta=0,k=c(0,0,1),n=1,round=FALSE,na=TRUE,
-         vector=FALSE,collapse=FALSE,wildcard=FALSE)
+dbExpect(probs,theta=0,k=c(0,0,1),n=1,r=0,R=0,round=FALSE,na=TRUE,vector=FALSE,
+         collapse=FALSE,wildcard=FALSE,no.wildcard=NULL,
+         rare.allele=FALSE,no.rare.allele=NULL)
 }
 \arguments{
   \item{probs}{List of vectors with allele probabilities for each locus}
@@ -22,6 +23,11 @@ dbExpect(probs,theta=0,k=c(0,0,1),n=1,round=FALSE,na=TRUE,
     k=(k2,k1,k0), where for full-siblings k=c(1,2,1)/4. The default is
     k=c(0,0,1) refering to unrelated individuals.}
   \item{n}{Number of DNA profiles in the database}
+  \item{r}{The probability assigned to the rare alleles (see rare allele
+  matching). If a vector must be of same length as \code{probs}.}
+  \item{R}{The probability assigned to alleles shorter or longer than
+    allelic ladder (see rare allele matching). If a vector must be of
+    length 1 or 2, and if a list it must be same length as  \code{probs}.}
   \item{round}{Whether or not the results should be rounded or not}
   \item{na}{Whether or not the off-elements should be returned as 0 or NA}
   \item{vector}{Whether or not the result should be returned as a matrix
@@ -30,6 +36,9 @@ dbExpect(probs,theta=0,k=c(0,0,1),n=1,round=FALSE,na=TRUE,
     (m,p)-matrix will be collapased into a (2*m+p)-vector containing the
     total number of matching alleles.}
   \item{wildcard}{Should wildcards be used?}
+  \item{no.wildcard}{Should 'w' wildcards be used?}
+  \item{rare.allele}{Should rare allele matching be used?}
+  \item{no.rare.allele}{Should 'r' rare allele loci be used?}
 }
 \details{
   Computes the expected cell counts using a recursion formula. See

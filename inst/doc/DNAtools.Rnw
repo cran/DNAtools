@@ -1,18 +1,22 @@
 \documentclass[a4paper,11pt]{article}
 
-\usepackage{url,amsmath,graphicx,booktabs,array,natbib,a4wide,color,alltt,parskip}
+\usepackage{url,amsmath,graphicx,booktabs,array,natbib,a4wide}
 \usepackage{hyperref}
 %\usepackage{Sweave}
-
-\usepackage{Rd}  % mainly for upright quotes.
 
 \newcommand{\SGMplus}{AmpF\textit{l}STR\textsuperscript{\textregistered}
   SGM Plus\textsuperscript{\texttrademark}}
 
 \newcommand{\proglang}[1]{\textsf{#1}}
-% \newcommand{\pkg}[1]{\textbf{#1}}
-% \newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\pkg}[1]{\textbf{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
 
+\author{\begin{tabular}{c!{\hspace{10mm}}c}James M. Curran& Torben Tvedebrink \\University of
+  Auckland& Aalborg University\end{tabular}}
+\title{\pkg{DNAtools} : Tools for empirical testing of DNA match probabilities}
+\date{}
+
+\usepackage{color}
 \definecolor{Blue}{rgb}{0,0,0.8}
 
 \hypersetup{%
@@ -24,18 +28,11 @@ urlcolor=Blue,%
 pdfstartview==FitW,%
 pdfview={XYZ null null null},%
 %pdfpagemode=UseNone,%
-pdftitle={Forensic DNA database matching},
 pdfauthor={James M. Currand and Torben Tvedebrink}%
 }
 
 
 \begin{document}
-
-\author{\begin{tabular}{c!{\hspace{10mm}}c}James M. Curran& Torben Tvedebrink \\University of
-  Auckland& Aalborg University\end{tabular}}
-\title{\pkg{DNAtools} : Tools for empirical testing of DNA match probabilities}
-\maketitle
-\sloppy
 
 %\VignetteIndexEntry{Forensic genetics}
 %\VignetteDepends{DNAtools}
@@ -82,14 +79,14 @@ Southwest Hispanics'', \citet{troyer2001}.
 As we will show later this is, in effect, an example of the ``birthday
 problem'' and therefore is regarded as completely predictable from a
 statistical perspective. However, most us who have taught a class on
-the birthday problem know that our students are initially skeptical. 
+the birthday problem know that our students are initially sceptical. 
 
 \subsection[Matches and partial matches]{DNA evidence, matches and partial matches}
 \label{sec:dna-matches-partial}
 Forensic genetics has its terminology which we briefly explain here. 
 Human DNA consists of 23 pairs of chromosomes and those
 chromosomes are composed of a sequence of nucleotides which are
-labeled A, G, C and T after the bases adenine, guanine, cytosine and
+labelled A, G, C and T after the bases adenine, guanine, cytosine and
 thymine that are used to form them. Modern DNA typing uses short
 tandem repeats (STRs). These are regions of DNA which are highly
 variable, but are patterned in that they consist of repeats of a short
@@ -127,8 +124,8 @@ Table~\ref{tab:prof} shows a DNA profile from the \SGMplus~ multiplex.
 There are two numbers at each locus representing the two alleles that
 make up the genotype at that locus. The numbers relate to the number
 of times the pattern or motif that describe the alleles at the locus
-are repeated. For example, this person's genotype at the locus THO1 is
-6,9.3. This means that on one chromosome, the motif for THO1,
+are repeated. For example, this person's genotype at the locus TH01 is
+6,9.3. This means that on one chromosome, the motif for TH01,
 \texttt{TCAT} was repeated 6 times, and on the other chromosome it was
 repeated 9 times, and then followed by \texttt{TCA}. The .3 represents
 the fact that three of the four bases have been repeated.
@@ -210,14 +207,14 @@ coancestry coefficient, $\theta$ or $F_{ST}$ models low levels of
 relatedness between individuals in the same subpopulation, and is
 typically between 0 and 0.03.
 
-\subsection[Modeling the data]{Modeling the observed data}
+\subsection[Modelling the data]{Modelling the observed data}
 Weir's original paper \citep{weir2004} contained an informal analysis
 where the minimum level of $\theta$ required to explain the observed
 counts was calculated. For example using the FBI Caucasian data
 \citep{budowle_1999} a $\theta$ value of 0.005 is needed to explain the
 679 observed one locus matches (at locus FGA). That is, if
 $\theta>0.005$, then the expected count at this locus will exceed the
-observed count. \cite{curran2007} formalized and extended this
+observed count. \cite{curran2007} formalised and extended this
 analysis in the following way. We model the expected number of pairs
 of profile which fully match at $m_2$ loci and partially match at
 $m_1$ loci for a given value of $\theta$, $E_{m_2/m_1}(\theta)$, as
@@ -237,9 +234,9 @@ with a typographical mistake corrected in
 for avuncular relationships. \citet{curran2007} estimated
 $\alpha,\beta,\delta,\gamma$ and $\theta$ by using a combination of a
 line search (across $\theta$) and a Monte Carlo steepest descent
-method to find the values that minimized several different distance
+method to find the values that minimised several different distance
 metrics applied to the observed and expected value. \citet{curran2007}
-recommended minimizing
+recommended minimising
 \begin{equation*}
   \label{eq:2}
   C_3(\theta) = \sum_{i=0}^{L}\sum_{j=0}^{L-m_2}\frac{|E_{i/j}(\theta)-O_{i/j}|}{O_{i/j}}
@@ -252,7 +249,7 @@ into this by \citet{tvedebrink2010,tvedebrink2011} has shown that Mahalanobis
 distance
 \begin{equation*}
   \label{eq:3}
-  T_2(\theta,) = \left(\vec{E}(\theta)-\vec{O}\right)^\top\Sigma(\theta)^{-}\left(\vec{E}(\theta)-\vec{O}\right)
+  T_2(\theta) = \left(\vec{E}(\theta)-\vec{O}\right)^\top\Sigma(\theta)^{-}\left(\vec{E}(\theta)-\vec{O}\right)
 \end{equation*}
 actually provides a ``better'' fit to the data and does not drive the
 value of $\theta$ to zero. $\Sigma(\theta)^{-}$ is a pseudo
@@ -270,7 +267,7 @@ and, in the case of \cite{curran2007}, generation of at least half a
 dozen precursor files and a significant amount of memory.
 \cite{tvedebrink2010,tvedebrink2011} reduced the computational
 effort of \cite{weir2004} and \cite{curran2007} by deriving
-recursion formulas for Equation \ref{eq:P}, improved the optimization
+recursion formulas for Equation \ref{eq:P}, improved the optimisation
 procedures through the use of the package \pkg{Rsolnp} \citep{Rsolnp},
 and derived the variances of the probabilities which allowed both the
 computation of Mahalanobis distances and asymptotic confidence
@@ -285,7 +282,8 @@ functions in \pkg{DNAtools} is a data frame, which is constituted by a
 column of DNA profile identifiers (the first column) and two columns
 per typed DNA marker. An example is given below: 
 \begin{verbatim}
-head(get(data(dbExample)))[,1:9]
+data(dbExample)
+head(dbExample)[,1:9]
 id D16S539.1 D16S539.2 D18S51.1 D18S51.2 D19S433.1 D19S433.2 D21S11.1 D21S11.2
  1        11        11       15       21        14        14       28       29
  2        13        12       15       14        16        16       29       28
@@ -399,7 +397,7 @@ package in that it may not scale well to extraordinarily large
 databases ($>$100,000 profiles), but we expect that this will be
 remedied by further development.
 
-\section*{Acknowledgments}
+\section*{Acknowledgements}
 We wish to acknowledge Professor Chris Triggs and the Department of
 Statistics at the University of Auckland for financial support for
 accommodation and travel for T.~Tvedebrink. We also wish to thank
@@ -450,18 +448,17 @@ Curran JM, Walsh SJ, Buckleton J (2007).
 \newblock ISSN 1878-0326.
 \newblock \urlprefix\url{http://www.ncbi.nlm.nih.gov/pubmed/19083772}.
 
-\bibitem[{Ghalanos and Theussl(2010)}]{Rsolnp}
-Ghalanos A, Theussl S (2010).
+\bibitem[{Ghalanos and Theussl(2012)}]{Rsolnp}
+Ghalanos A, Theussl S (2012).
 \newblock \emph{\pkg{Rsolnp}: General Non-linear Optimization}.
-\newblock \proglang{R}~package version~1.0-7,
+\newblock \proglang{R}~package version~1.14,
   \urlprefix\url{http://CRAN.R-project.org/package=Rsolnp}.
 
 \bibitem[{Kaye(2009)}]{kaye2009}
 Kaye DH (2009).
 \newblock \enquote{Trawling {DNA} Databases for Partial Matches: What Is the
   {FBI} Afraid Of?}
-\newblock \emph{Cornell Journal of Law and Public Policy}, \textbf{19}(1), (in
-  press).
+\newblock \emph{Cornell Journal of Law and Public Policy}, \textbf{19}(1).
 
 \bibitem[{Mueller(2008)}]{mueller2008}
 Mueller LD (2008).
@@ -472,10 +469,10 @@ Mueller LD (2008).
 \newblock \urlprefix\url{http://www.ncbi.nlm.nih.gov/pubmed/18776637}.
 
 \bibitem[{{R Development Core Team}(2010)}]{rcore2010}
-{R Development Core Team} (2010).
+{R Development Core Team} (2013).
 \newblock \emph{R: A Language and Environment for Statistical Computing}.
 \newblock R Foundation for Statistical Computing, Vienna, Austria.
-\newblock {ISBN} 3-900051-07-0, \urlprefix\url{http://www.R-project.org}.
+\newblock \urlprefix\url{http://www.R-project.org}.
 
 \bibitem[{Troyer \emph{et~al.}(2001)Troyer, Gilboy, and Koeneman}]{troyer2001}
 Troyer K, Gilboy T, Koeneman B (2001).
@@ -496,11 +493,11 @@ Tvedebrink T (2010).
 \newblock Ph.D. thesis, Department of Mathematical Sciences, Aalborg
   University.
 
-\bibitem[{Tvedebrink \emph{et~al.}(2011)Tvedebrink, Eriksen, Curran, Mogensen, and Morling}]{tvedebrink2011}
-Tvedebrink T, Eriksen PS, Curran JM, Mogensen HS, Morling N (2011).
+\bibitem[{Tvedebrink \emph{et~al.}(2012)Tvedebrink, Eriksen, Curran, Mogensen, and Morling}]{tvedebrink2011}
+Tvedebrink T, Eriksen PS, Curran JM, Mogensen HS, Morling N (2012).
 \newblock \enquote{Analysis of matches and partial-matches in a Danish DNA
   reference profile data set.}
-\newblock \emph{Forensic Science International: Genetics}.
+\newblock \emph{Forensic Science International: Genetics} \textbf{6}(3), 387--392.
 
 \bibitem[{Weir(2004)}]{weir2004}
 Weir BS (2004).

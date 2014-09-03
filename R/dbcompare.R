@@ -1,67 +1,137 @@
-dbCompare <- function(x,profiles=NULL,hit=7,trace=TRUE,vector=FALSE,collapse=FALSE,wildcard=FALSE,wildcard.effect=FALSE,wildcard.impose=FALSE,threads=2){
-  if(all(wildcard,wildcard.effect)) stop("Only one wildcard option is allowed to be 'TRUE' at any time")
+dbCompare <- function(x, profiles = NULL, hit = 7, trace = TRUE, vector = FALSE, collapse = FALSE,
+                      wildcard = FALSE, wildcard.effect = FALSE, wildcard.impose = FALSE,
+                      Rallele = FALSE, threads = 2){
+  
+  if(all(wildcard,wildcard.effect))
+    stop("Only one wildcard option is allowed to be 'TRUE' at any time")
+  
+  if(threads < 1){
+    stop("Must have at least one thread")
+  }
+  
   x.cp <- x ## Keep copy of input
-  ## Looks after amelogenin loci - and drop these
-  amel.candidate <- unlist(lapply(head(x,n=20),function(y) any(grepl("^(x|y|X|Y|xx|xy|XX|XY)$",paste(y)))))
-  x <- x[,!amel.candidate]
+  
+  isAmelogenin = function(x){
+    ## Looks after amelogenin loci - and drop these
+    amel.candidate <- unlist(lapply(head(x, n = 20), function(y){any(grepl("^(x|y|X|Y|xx|xy|XX|XY)$",paste(y)))}))
+    
+    return(amel.candidate)
+  }
+    
+  x <- x[,!isAmelogenin(x)]
+  
   ## 
-  if(ncol(x)%%2!=0){ ## Unequal number of columns - assumes first col is identifier
-    id <- x[,1,drop=TRUE]
-    nid <- names(x)[1]
-    x <- x[,-1]
+  stripID = function(x){
+    id = nid = NULL
+    
+    if(ncol(x) %% 2 != 0){ ## Unequal number of columns - assumes first col is identifier
+      id <- x[ ,1, drop = TRUE]
+      nid <- names(x)[1]
+      x <- x[,-1]
+    }else{
+      id = 1:nrow(x)
+      nid = NULL
+    }
+    
+    return(list(x = x, id = id, nid = nid))
+    
   }
+  
+  r = stripID(x)
+  x = r$x
+  id = r$id
+  nid = r$nid
+  
   ## number of loci
-  nl <- ncol(x)/2
-  ## Converts all alleles to a*10, e.g. 9 -> 90 and 9.3 -> 93 (to deal with .1, .2 and .3 alleles)
-  for(i in 1:ncol(x)){
-    if(class(x[[i]])=="factor") x[[i]] <- paste(x[[i]])
-    x[[i]] <- as.numeric(x[[i]])*10
-    class(x[[i]]) <- "integer"
+  numLoci <- ncol(x)/2
+  
+  toInteger = function(x){
+    ## Converts all alleles to a*10, e.g. 9 -> 90 and 9.3 -> 93 (to deal with .1, .2 and .3 alleles)
+    for(i in 1:ncol(x)){
+      if(class(x[[i]])=="factor") x[[i]] <- paste(x[[i]])
+      x[[i]] <- as.numeric(x[[i]])*10
+      class(x[[i]]) <- "integer"
+    }
+    
+    return(x)
   }
+  
+  x = toInteger(x)
+  
   ## Specific profile(s) that should be compared to profiles in x
   if(!is.null(profiles)){
     nx <- names(x)
-    if(is.null(dim(profiles))) dim(profiles) <- c(1,length(profiles))
-    if(is.matrix(profiles)) profiles <- as.data.frame(profiles)
-    amel.candidate <- unlist(lapply(head(profiles,n=min(nrow(profiles),20)),function(y) any(grepl("^(x|y|X|Y|xx|xy|XX|XY)$",paste(y)))))
-    profiles <- profiles[,!amel.candidate]
-    if(ncol(profiles)==ncol(x)) names(profiles) <- nx
-    else{
+    if(is.null(dim(profiles))) 
+      dim(profiles) <- c(1,length(profiles))
+    
+    if(is.matrix(profiles)) 
+      profiles <- as.data.frame(profiles)
+    
+    #amel.candidate <- unlist(lapply(head(profiles,n=min(nrow(profiles),20)),function(y) any(grepl("^(x|y|X|Y|xx|xy|XX|XY)$",paste(y)))))
+    profiles <- profiles[ ,!isAmelogenin(profiles)]
+    
+    if(ncol(profiles)==ncol(x)){ 
+      names(profiles) <- nx
+    }else{
       id <- c(profiles[,1,drop=TRUE],id)
       profiles <- structure(profiles[,-1],.Names=nx)
     }
-    for(i in 1:ncol(profiles)){
-      if(class(profiles[[i]])=="factor") profiles[[i]] <- paste(profiles[[i]])
-      profiles[[i]] <- as.numeric(profiles[[i]])*10
-      class(profiles[[i]]) <- "integer"
-    }
+    
+#     for(i in 1:ncol(profiles)){
+#       if(class(profiles[[i]])=="factor") profiles[[i]] <- paste(profiles[[i]])
+#       profiles[[i]] <- as.numeric(profiles[[i]])*10
+#       class(profiles[[i]]) <- "integer"
+#     }
+    profiles = toInteger(profiles)
     x <- rbind(profiles,x)
     single <- nrow(profiles) ## Number of profiles to compare with x // input for C++ code
+  }else{ 
+    single <- 0
   }
-  else single <- 0
-  for(i in ((0:(nl-1))*2+1)){ ## Looks for situations where A[1]>A[2]: C++ code assumes A[1]<=A[2]
-    if(any(swap.index <- x[[i]]>x[[i+1]])){
-      x[swap.index,c(i,i+1)] <- x[swap.index,c(i+1,i)]
+  
+  orderAlleles = function(x){
+    for(i in ((0:(numLoci-1))*2+1)){ ## Looks for situations where A[1]>A[2]: C++ code assumes A[1]<=A[2]
+      if(any(swap.index <- x[[i]]>x[[i+1]])){
+        if(Rallele) 
+          swap.index[x[[i]]==990] <- FALSE ## If R-allele (coded as 99*10, cf above) don't swap (order matters)
+        x[swap.index,c(i,i+1)] <- x[swap.index,c(i+1,i)]
+      }
+      ## Force homs to have wildcards
+      if(wildcard.impose) 
+         x[[i]][x[[i]]==x[[i+1]]] <- 0
     }
-    ## Force homs to have wildcards
-    if(wildcard.impose) x[[i]][x[[i]]==x[[i+1]]] <- 0
+    return(x)
   }
+  
+  x = orderAlleles(x)
+  
   if(!wildcard){
     ## If no wildcard is allowed, but the database contains "0" which is equivalent of "F" then these profiles are removed before comparison
     x0 <- x[(xnull <- apply(x[,-1],1,function(y) any(y==0))),]
     x <- x[!xnull,]
   }
+  
   x.cp1 <- x ## Keep copy of x
-  x <- do.call("paste",c(x=x,sep="\t"))
-  if(threads==1 | single>0){
-    if(threads>1) warning("Profiles argument only available for single CPU implementation - computations performed using single core")
-    res <- .Call("compare", x, c(as.integer(nl),as.integer(hit),as.integer(trace),as.integer(single),as.integer(wildcard),as.integer(wildcard.effect)), PACKAGE = "DNAtools")
+  x <- do.call("paste",c(x=x,sep="\t")) ## Converts every line in the DB to a string separated by "\t"
+  if(threads>1){
+    res <- .Call("DNAtools_mcompare", x, as.integer(numLoci), as.integer(hit), as.integer(trace), as.integer(single), 
+                                as.integer(threads), as.integer(wildcard), as.integer(wildcard.effect), as.integer(Rallele),
+                                PACKAGE = "DNAtools")
+  }else{
+    res <- .Call("DNAtools_compare", x, as.integer(numLoci), as.integer(hit), as.integer(trace), as.integer(single), 
+                               as.integer(wildcard), as.integer(wildcard.effect), as.integer(Rallele),
+                               PACKAGE = "DNAtools")
   }
-  else
-    res <- .Call("mcompare", x, c(as.integer(nl),as.integer(hit),as.integer(trace),as.integer(single),as.integer(threads),as.integer(wildcard),as.integer(wildcard.effect)), PACKAGE = "DNAtools")
-  if(wildcard.effect) result <- list(m=matrix(res$M,2*nl+1,2*nl+1,byrow=TRUE,dimnames=list(Genuine=0:(2*nl),Wildcard=0:(2*nl))))
-  else result <- list(m=matrix(res$M,nl+1,nl+1,byrow=TRUE,dimnames=list(match=0:nl,partial=0:nl)))
-  call <- list(loci=nl,single=single,collapse=collapse,vector=vector,wildcard=c(wildcard,wildcard.effect))
+  
+  if(wildcard.effect){
+    result <- list(m = matrix(res$M, 2 * numLoci + 1, 2 * numLoci + 1, byrow = TRUE,
+                              dimnames = list(Genuine = 0:(2 * numLoci), Wildcard=0:(2*numLoci))))
+  }else{
+    result <- list(m = matrix(res$M, numLoci+1, numLoci + 1,byrow = TRUE, 
+                              dimnames = list(match = 0:numLoci, partial = 0:numLoci)))
+  }
+  
+  call <- list(loci=numLoci,single=single,collapse=collapse,vector=vector,wildcard=c(wildcard,wildcard.effect))
   if(length(res$row1)>0){
     result <- c(result,list(hits=data.frame(id1=id[res$row1],id2=id[res$row2],match=res$matches,partial=res$partial)))
     if(wildcard) result$hits <- cbind(result$hits,Fmatch=res$fmatches,Fpartial=res$fpartial)
@@ -69,7 +139,7 @@ dbCompare <- function(x,profiles=NULL,hit=7,trace=TRUE,vector=FALSE,collapse=FAL
     call <- c(call,list(hit=hit))
   }
   else result$hits <- NULL
-  if(collapse) result$m <- structure(dbCollapse(result$m),.Names=0:(2*nl))
+  if(collapse) result$m <- structure(dbCollapse(result$m),.Names=0:(2*numLoci))
   else if(vector) result$m <- structure(t(result$m)[up.tri(result$m)],
                                         .Names=t(outer(dimnames(result$m)[[1]],dimnames(result$m)[[2]],paste,sep="/"))[up.tri(result$m)])
   if(!wildcard){

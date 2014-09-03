@@ -38,8 +38,7 @@ noaTabs(alpha=NULL,m=2,weight=1)
 
 \examples{
   ## Simulate some allele frequencies:
-  freqs <-  structure(replicate(10,
-              { g = rgamma(n=10,scale=4,shape=3); g/sum(g)},
+  freqs <-  structure(replicate(10, { g = rgamma(n=10,scale=4,shape=3); g/sum(g)},
               simplify=FALSE),.Names=paste("locus",1:10,sep="."))
   ## Compute alpha_2
   noa.tab2 <- noaTabs(m=2)

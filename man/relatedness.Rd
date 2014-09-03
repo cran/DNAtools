@@ -12,9 +12,9 @@
 optim.relatedness(obs,theta0=0,theta1=0.03,theta.tol=10^(-7),
                   theta.step=NULL,max.bisect=15,probs,var.list=NULL,
                   init.alpha=10^c(-4,-6,-8,-10),init.keep=FALSE,
-                  objFunction=c("T2","T1","C3","C2","C1"),
-                  collapse=FALSE,trace=FALSE,solnp.ctrl=list(tol=10^(-9),
-                  rho=10,delta=min(init.alpha)*0.01,trace=FALSE))
+                  objFunction=c("T2","T1","C3","C2","C1"),collapse=FALSE,
+                  trace=FALSE,solnp.ctrl=list(tol=10^(-9),rho=10,
+                  delta=min(init.alpha)*0.01,trace=FALSE))
 }
 \arguments{
   \item{obs}{The matrix or vector of observed matches/partial-matches as

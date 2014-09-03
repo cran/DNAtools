@@ -12,17 +12,13 @@
   of close related individuals are available. The use of wildcards (also
   called F-designation) is implemented. Dedicated functions ease
   plotting the results.
-
-  Methods to evaluate the distribution of the number of alleles in DNA
-  mixtures have been added. This includes methods to assess a drop-out
-  probability, number of contributors and the distribution in it self.
 }
 \details{
 \tabular{ll}{
 Package: \tab DNAtools\cr
 Type: \tab Package\cr
 Version: \tab 0.1\cr
-Date: \tab 2013-06-19\cr
+Date: \tab 2014-08-25\cr
 License: \tab GPL (>= 2)\cr
 }
 dbCompare: Compares make all n(n-1)/2 pairwise comparisons between
@@ -30,9 +26,6 @@ profiles of a database with n DNA profiles.
 dbExpect: Computes the expected number of matching and partial matching
 loci for a given number of profiles in a database.
 dbVariance: Calculates the associated covariance matrix.
-pNoA: The distribution of the number of alleles for DNA mixtures.
-pContrib: Assess the posterior distribution for the number of contributors.
-estimatePD: Estimate the drop-out probability based on the number of alleles.
 }
 \author{
 Torben Tvedebrink <tvede@math.aau.dk> and James Curran

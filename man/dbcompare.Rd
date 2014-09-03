@@ -5,9 +5,9 @@
   Compare DNA profiles
 }
 \usage{
-dbCompare(x, profiles=NULL, hit=7, trace=TRUE, vector=FALSE,
-          collapse=FALSE, wildcard=FALSE, wildcard.effect=FALSE,
-          wildcard.impose=FALSE,threads=2)
+dbCompare(x, profiles=NULL, hit=7, trace=TRUE, vector=FALSE, collapse=FALSE,
+          wildcard=FALSE,wildcard.effect=FALSE, wildcard.impose=FALSE,
+          Rallele=FALSE, threads=2)
 }
 \arguments{
   \item{x}{Database with DNA profiles. The database format is expected
@@ -26,13 +26,14 @@ dbCompare(x, profiles=NULL, hit=7, trace=TRUE, vector=FALSE,
   \item{collapse}{Logical (default FALSE). If TRUE the
     (m,p)-matrix will be collapased into a (2*m+p)-vector containing the
     total number of matching alleles.}
+  \item{wildcard}{Use the wildcard comparing.}
+  \item{wildcard.effect}{Compare result of wildcard and no wildcard.}
+  \item{wildcard.impose}{Force homozygouse profiles (aa) to have wildcard (aF).}
+  \item{Rallele}{Implementation of 'Rare allele'designation matching.}
   \item{threads}{The number of threads to use for performing comparisons 
     in parallel for increased computation time. Use 0 for using the 
     same number as the computer has CPU cores. NOTE: Only available on 
     Linux and MacOS operating systems.}
-  \item{wildcard}{Use the wildcard comparing.}
-  \item{wildcard.effect}{Compare result of wildcard and no wildcard.}
-  \item{wildcard.impose}{Force homozygouse profiles (aa) to have wildcard (aF).}
 }
 \details{
   Computes the distance between DNA profiles in terms of matching and

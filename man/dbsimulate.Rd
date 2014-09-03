@@ -53,7 +53,7 @@ dbSimulate(probs,theta=0,n=1000,relatives=NULL)
   dimnames(Msummary)[[2]] <- DNAtools:::dbCats(length(freq),vector=TRUE)
   ## Plot the simulations using a boxplot
   boxplot(log10(Msummary))
-  ## There might come some warnings due to taking log10 to zero counts
+  ## There might come some warnings due to taking log10 to zero-values (no counts)
   ## Add the expected number to the plot:
   points(1:ncol(Msummary),log10(dbExpect(freq,theta=0,n=1000,vector=TRUE)),
          col=2,pch=16)

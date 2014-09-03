@@ -1,11 +1,3 @@
-## Makes all permuations of a vector and returns a matrix // Based on the 'multicool' package of Prof. James M. Curran
-permAll <- function(x){
-  if(length(x)==1) return(x)
-  xx = initMC(x)
-  allPerm(xx)
-}
-
-
 ## counts how many copies there is of each alpha-vector and returns the
 ## unique vectors together with their counts
 permSummary.noa <- function(x){

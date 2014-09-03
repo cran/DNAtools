@@ -8,8 +8,7 @@
   approach based on their line of arguments.
 }
 \usage{
-estimatePD(n0,m,pnoa=NULL,probs=NULL,theta=0,noa.tabs=NULL,
-           locuswise=FALSE)
+estimatePD(n0,m,pnoa=NULL,probs=NULL,theta=0,noa.tabs=NULL,locuswise=FALSE)
 }
 \arguments{
   \item{n0}{Vector of observed allele counts - same length as the number
@@ -45,8 +44,7 @@ estimatePD(n0,m,pnoa=NULL,probs=NULL,theta=0,noa.tabs=NULL,
 
 \examples{
   ## Simulate some allele frequencies:
-  freqs <-  structure(replicate(10,
-              { g = rgamma(n=10,scale=4,shape=3); g/sum(g)},
+  freqs <-  structure(replicate(10, { g = rgamma(n=10,scale=4,shape=3); g/sum(g)},
               simplify=FALSE),.Names=paste("locus",1:10,sep="."))
   ## Assume 15 alleles are observed in a 2-person DNA mixture with 10 loci:
   estimatePD(n0=15,m=2,probs=freqs)
