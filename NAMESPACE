@@ -20,3 +20,15 @@ export(pContrib)
 export(estimatePD)
 importFrom(Rcpp, evalCpp)
 import(Rsolnp, multicool)
+
+importFrom("graphics", "axis", "box", "plot", "points")
+importFrom("stats", "aggregate", "optimise")
+importFrom("utils", "head")
+
+S3method(lines, dbOptim)
+S3method(plot, dbOptim)
+S3method(plot, dbcompare)
+S3method(points, dbOptim)
+S3method(print, dbOptim)
+S3method(print, dbcompare)
+

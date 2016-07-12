@@ -1,5 +1,5 @@
-1f6d852e46e6a2d9501cd3d616575f9c *DESCRIPTION
-045c5ec9681d7be505fd3f2ebfa673cd *NAMESPACE
+7272165150f1f5c1cf070331102edcf5 *DESCRIPTION
+cb961ca4f8de3d12397d4c81543dd960 *NAMESPACE
 db14e29a7da3a06dfcdd3864f25f6653 *R/RcppExports.R
 69bc729ae862a52ad449760a976be120 *R/dbcompare.R
 390fa85504d35ff1ae1365d3a2169989 *R/freqEst.R
@@ -39,9 +39,9 @@ f2001998753d12312024c0d57cf82186 *man/relatedness.Rd
 5b0ff61d8ef70be288a5513d736f71e1 *src/DNTRare.cpp
 a360ccac5160302cfb1ec8863afe142b *src/DNTRare.h
 cbf3477e747257809ccbdd0ceacd092b *src/RcppExports.cpp
-2a2e5143a67f3d3f291afd77e1815f30 *src/mcompare.cpp
+3471c05a227de1c710604f2848a888e0 *src/mcompare.cpp
 6b46bb57564c7af6bbdaeab91e90842a *src/prob.cpp
-4b25195ab31960459c123bbcbf2c2df1 *src/profile.cpp
+0bd78feca4d33e8dd4865d198713157e *src/profile.cpp
 1eebfea3101b1d8ffb208de84c45a078 *src/profile.h
 0da63b615f705aa9dfa2e91b15a0ec3a *src/rcpp_hello_world.cpp
 fdbe934d0fe58f10a323dd8712d40233 *vignettes/DNAtools.Rnw

@@ -25,6 +25,7 @@
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
+#undef length
 
 
 Profile::Profile(void){
