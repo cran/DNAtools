@@ -14,7 +14,7 @@
 \author{\begin{tabular}{c!{\hspace{10mm}}c}James M. Curran& Torben Tvedebrink \\University of
   Auckland& Aalborg University\end{tabular}}
 \title{\pkg{DNAtools} : Tools for empirical testing of DNA match probabilities}
-\date{}
+%% \date{}
 
 \usepackage{color}
 \definecolor{Blue}{rgb}{0,0,0.8}

@@ -45,17 +45,24 @@
 #include <vector>
 #include <queue>
 
-#include <R.h>
-#include <Rdefines.h>
-#include <Rinternals.h>
-#undef length
-#include <Rcpp.h>
+/*
+#include <R.h> // remove due to Rcpp update?
+#include <Rdefines.h> // remove due to Rcpp update?
+#include <Rinternals.h> // remove due to Rcpp update?
+#undef length // remove due to Rcpp update?
+#include <Rcpp.h> // remove due to Rcpp update?
+*/
+#undef length // remove due to Rcpp update?
+ 
+// move up due to Rcpp update?
+// JMC: removed Profile class declaration and implementation to separate files for maintainability
+#include "profile.h"
 
 // JMC: header for interrupts
 #include <R_ext/Utils.h>
 
-// JMC: removed Profile class declaration and implementation to separate files for maintainability
-#include "profile.h"
+// load last (Rcpp update)?
+#include <Rcpp.h>
 
 // Mikkel:
 #ifdef MACOS
@@ -622,14 +629,14 @@ Rcpp::List mcompare(SEXP db, SEXP numLoci, SEXP bigHit, SEXP trace, SEXP single,
   if (pthread_mutex_init(&change_lock, NULL)) {
     // REprintf("Could not initialize change_lock mutex, aborting.\n");
     // fprintf(stderr, "Could not initialize change_lock mutex, aborting.\n");
-    error("Could not initialize change_lock mutex, aborting.\n"); 
+    Rf_error("Could not initialize change_lock mutex, aborting.\n"); 
     // exit(1);
   }
   
   if (pthread_mutex_init(&i_queue_lock, NULL)) {
     // REprintf("Could not initialize i_queue_lock mutex, aborting.\n");
     // fprintf(stderr, "Could not initialize i_queue_lock mutex, aborting.\n");
-    error("Could not initialize i_queue_lock mutex, aborting.\n"); 
+    Rf_error("Could not initialize i_queue_lock mutex, aborting.\n"); 
     // exit(1);
   }
   
@@ -671,7 +678,7 @@ Rcpp::List mcompare(SEXP db, SEXP numLoci, SEXP bigHit, SEXP trace, SEXP single,
     if (rc) {
       // REprintf("Error in thread creation: %i.\n", rc);
       // fprintf(stderr, "Error in thread creation: %i.\n", rc);
-      error("Error in thread creation");
+      Rf_error("Error in thread creation");
       // exit(-1);
     }
   }
@@ -719,7 +726,7 @@ Rcpp::List mcompare(SEXP db, SEXP numLoci, SEXP bigHit, SEXP trace, SEXP single,
     if (rc) {
       // REprintf("Error in thread joining: %i.\n", rc); 
       // fprintf(stderr, "Error in thread joining: %i.\n", rc);
-      error("Error in thread joining"); 
+      Rf_error("Error in thread joining"); 
       // exit(-1);
     }
   }
