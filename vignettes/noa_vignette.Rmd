@@ -1,0 +1,339 @@
+---
+title: "On the exact distribution of the numbers of alleles in DNA mixtures"
+author: "Mikkel Meyer Andersen, James Michael Curran and Torben Tvedebrink"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: yes
+
+vignette: >
+  %\VignetteIndexEntry{On the exact distribution of the numbers of alleles in DNA mixtures}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+opts_chunk$set(
+  collapse = TRUE,
+  comment = ""
+)
+options(knitr.kable.NA = '')
+```
+
+# Introduction
+
+Please refer to the `dna_vignette` ("STR markers in forensic genetics") 
+for an explanation of forensic DNA profiles.
+
+When more than one individual contributes biological material to a
+forensic stain, the resulting DNA type is termed a DNA mixture. DNA
+mixtures occur frequently in forensic genetic casework, and in
+recent years much research has been devoted to this subject.
+
+This vignette shows how to compute the exact distribution of the number 
+of alleles for any number of profiles and investigated loci using the `DNAtools`
+package in R. 
+```{r, warning=FALSE, message=FALSE}
+library(DNAtools)
+```
+
+
+The per locus number of observed alleles is of interest as it indicates the
+plausible range of the number of contributors. If a DNA mixture has $m$ 
+contributors, it is possible to observe anything between $1$ and $2m$ alleles
+at a given marker. Of particular interest is the probability at which an $m+1$
+person DNA mixture is percieved as an $m$ person DNA mixture. That is, what is 
+the probability that $m$ persons have at most $2(m-1)$ distinct alleles among
+them?
+
+# DNA mixtures
+
+In forensic genetics, a DNA mixture refers to the situation where more
+than one individual's DNA is present in an analysed trace. DNA
+mixtures are regularly encountered in forensic genetics.
+
+However, an exact expression of the number of alleles has not been
+presented up to now. We show how to derive the probability that $N$
+alleles are observed given $m$ contributors and $L$ typed loci.
+
+The prevailing technology for identity assessment and DNA mixture analysis in 
+forensic genetics uses so-called Short Tandem Repeat (STR) markers or loci.
+The number of alleles observed at these markers are typically in the range of
+10 to 30 alleles. 
+
+In the `DNAtools` there is a database with 1,000 simulated DNA profiles on
+10 autosomal STR markers, which we will use to compute the allele frequencies.
+
+```{r}
+data(dbExample, package = "DNAtools")
+kable(head(dbExample)[,2:7])
+```
+
+We extract the relevant columns and compute the allele frequencies by the 
+allele count and total number of alleles in the data.
+
+```{r}
+allele_freqs <- lapply(1:10, function(x){
+  al_freq <- table(c(dbExample[[x*2]], dbExample[[1+x*2]]))/(2*nrow(dbExample))
+  al_freq[sort.list(as.numeric(names(al_freq)))]
+})
+names(allele_freqs) <- sub("\\.1", "", names(dbExample)[(1:10)*2])
+```
+
+```{r, results = 'asis', echo=FALSE, fig.align="left"}
+for(l in head(names(allele_freqs))){
+  # cat(paste0("**",l,"**\n\n"))
+  cat("\n")
+  cat(kable(t(c(setNames(NA, paste0(l,":")), allele_freqs[[l]]))), sep = "\n")
+}
+```
+
+## Single locus
+
+The total number of alleles observed for $m$ contributors depends on
+the number of loci, $L$, through the locus specific allele counts,
+$N_l$, by $N(m) = \sum_{l=1}^L N_l(m)$. Hence, we can focus on
+computing the distribution of $N_l(m)$ below.
+
+The number of alleles at locus $l$, $N_l(m)$, follows a distribution,
+where the number of alleles range from 1 (all $m$ profiles homozygous
+with the same allele) to $2m$ (all $m$ profiles heterozygous sharing
+no allele). For each value that $N_l(m)$ can attain there will
+typically be several ways $m$ profiles can produce $N_l(m)$ distinct
+alleles. For a given locus $l$, we use the function `Pnm_locus()` to 
+compute $P(N_l(m) = n)$, for $n = 1,\dots,2m$, where we need to specify $m$
+together with the allele frequencies.
+
+```{r}
+m <- 3
+P3_D16 <- Pnm_locus(m = m, theta = 0, alleleProbs = allele_freqs$D16S539)
+```
+
+```{r, results='asis'}
+cat(kable(t(setNames(P3_D16, paste0("P(n=",1:(2*m), "|m=3)")))), sep = "\n")
+```
+
+
+The `theta` argument refers to the $\theta$ coefficient used to account
+for genetic dependence of alleles in the Balding-Nicholls population genetic
+model. Typical values ranges from $0$ (independent alleles, no subpopulation 
+structure) to $0.03$ (mild correlation, some subpopulation structure).
+
+We can also compute the probabilities for several $m$. Here we let $m$ 
+range between 1 and 6 contributors.
+```{r}
+ms <- 1:6
+Ps_D16 <- matrix(NA, ncol = length(ms), nrow = max(ms)*2, 
+                 dimnames = list(alleles = 1:(max(ms)*2), noContrib = ms))
+for(m in seq_along(ms)){
+  Ps_D16[1:(ms[m]*2), m] <- Pnm_locus(m = ms[m], theta = 0, alleleProbs = allele_freqs$D16S539)
+}
+```
+
+```{r, results='asis'}
+dimnames(Ps_D16) <- list(paste0("n=", rownames(Ps_D16),""), 
+                         paste0("P(n|m=", colnames(Ps_D16),")"))
+kable(Ps_D16, row.names = TRUE)
+```
+
+
+
+
+If we plot the outcome we see that for $m \in \{4, 5, 6\}$ the most probable
+allele count is 4 indicating that D16S539 is not very polymorphic in this population.
+
+```{r, fig.width=7, fig.asp=0.62}
+par(mar = c(4,5,0,0))
+plot(c(1,max(ms)*2), range(Ps_D16, na.rm = TRUE), type = "n",
+     xlab = "no. of allele", ylab = "Probability")
+for (m in seq_along(ms)) {
+  lines(1:(2*ms[m]), Ps_D16[1:(ms[m]*2),m], col = m)
+}
+legend("topright", bty = "n", title = "m", legend = ms, col = seq_along(ms), lty = 1)
+```
+
+The probability of masking can be calculated from the table above. Hence,
+we need to compute $P(N_l(m) \le 2(m-1))$, which is done below.
+
+```{r}
+Ps_D16_cumsum <- apply(Ps_D16, 2, cumsum)
+```
+
+```{r, results='asis', echo=FALSE}
+nm <- dim(Ps_D16_cumsum)
+dimnames(Ps_D16_cumsum) <- list(paste0("n'=",1:nm[1]), 
+                                paste0("P(n&le;n'|m=",1:nm[2],")"))
+kable(Ps_D16_cumsum, row.names = TRUE, escape = TRUE)
+```
+
+We see that the probability that an $m$ person mixture is misconceived as 
+an $m-1$ person mixture is 
+```{r, results='asis',echo=FALSE}
+Pm_D16 <- setNames(rep(NA, max(ms)-1), paste0("P(n&le;",(1:(max(ms)-1))*2,"|m=",2:max(ms),")"))
+for(m in 2:max(ms)) Pm_D16[m-1] <- Ps_D16_cumsum[2*(m-1),m]
+kable(t(Pm_D16))
+```
+
+Hence, there is a probability of `r Pm_D16[2]` that a three-person mixture 
+has at most four alleles, which implies it can be interpreted as a two-person mixture.
+
+If we are interested in computing the locuswise probabilities for all loci
+in our dataset, we simply use the `Pnm_all` function with `locuswise = TRUE`.
+
+```{r}
+no_contrib <- 3
+Pnm_all_tab <- Pnm_all(m = no_contrib, theta = 0, probs = allele_freqs, locuswise = TRUE)
+```
+
+```{r, echo = FALSE}
+kable(Pnm_all_tab, row.names = TRUE, col.names = paste0("P(n=",1:(2*no_contrib),"|m=",no_contrib,")"))
+```
+
+
+### Accumulating over loci
+
+Since the loci are assumed independent, we can also compute the probability
+that we see at most $n_0$ alleles at *all* markers:
+$$
+P(N_1(m) \le n_0, \dots, N_L(m)\le n_0) = \prod_{l=1}^L P(N_l(m) \le n_0)
+$$
+
+For instance, we may compute for $m\in\{1,\dots,6\}$ the probability of seeing 
+at most $n_0 \in\{1,\dots,2m\}$ alleles for the ten STR markers in `allele_freqs`.
+
+```{r}
+locus_Ps <- lapply(ms, Pnm_all, theta = 0, probs = allele_freqs, locuswise = TRUE)
+locus_Ps_cumsum <- lapply(locus_Ps, apply, 1, cumsum)
+all_Ps_cumsum <- lapply(locus_Ps_cumsum, apply, 1, prod)
+all_Ps_table <- matrix(NA, ncol = length(ms), nrow = max(ms)*2, 
+                       dimnames = list(n0 = 1:(max(ms)*2), m = ms))
+for(m in seq_along(ms)) all_Ps_table[1:(ms[m]*2), m] <- all_Ps_cumsum[[m]]
+```
+
+```{r, echo=FALSE}
+nm <- dim(all_Ps_table)
+dimnames(all_Ps_table) <- list(paste0("n~0~=",1:nm[1]), paste0("P(n&le;n~0~|m=",1:nm[2],")"))
+kable(all_Ps_table, row.names = TRUE, escape = FALSE)
+```
+
+
+Again we may investigate the risk the a $m$-person DNA mixture is misconceived as a 
+$(m-1)$-person DNA mixture, when considering *all* loci:
+```{r}
+Pm_all <- setNames(rep(NA, max(ms)-1), paste0("P(n&le;",(1:(max(ms)-1))*2,"|m=",2:max(ms),")"))
+for(m in 2:max(ms)) Pm_all[m-1] <- all_Ps_table[2*(m-1),m]
+```
+
+```{r,results='asis',echo=FALSE}
+kable(t(round(Pm_all, 4)))
+```
+
+
+### $\theta$-correction
+
+We can also look at the effect of the $\theta$-correction on the distribution
+of observed number of alleles. The stronger the subpopulation effect (measured 
+by increasing $\theta$), the fewer alleles will be observed.
+
+```{r, fig.width=7, fig.asp=0.62}
+par(mar = c(4,5,0,0))
+P3_D16_t0.03 <- Pnm_locus(m = 3, theta = 0.03, alleleProbs = allele_freqs$D16S539)
+P3_D16_t0.1 <- Pnm_locus(m = 3, theta = 0.1, alleleProbs = allele_freqs$D16S539)
+plot(P3_D16_t0.03, type = "o", pch = 16, ylab = "Probability", xlab = "no. of alleles", col = 2)
+points(P3_D16, type = "o", lty = 2, col = 1)
+points(P3_D16_t0.1, type = "o", lty = 3, pch = 2, col = 3)
+legend("topleft", bty = "n", title = expression(theta), col = 1:3,
+       legend = c("0.00", "0.03", "0.10"), lty = c(2, 1, 3), pch = c(1, 16, 2))
+```
+
+## Summing over loci
+
+In order to obtain $n$ alleles for $m$ contributors and $L$ loci, the
+locus counts must sum to $n$. By convolution, we obtain
+$$
+P(N^{l{+}1}(m) = n) = \sum_{i=1}^I P(N^{l}(m) = n-i)P(N_{l+1}(m)=i),
+$$
+where $I = \min(2m,n{-}1)$ with $P(N_{l+1}(m)=i)$ denoting the
+probability that locus $l{+}1$ has $i$ observed alleles, and
+$P(N^l(m)=n)$ is the probability to observe $n$ alleles for $l$ loci
+and $m$ profiles. 
+
+We compute this by setting `locuswise = FALSE` in `Pnm_all`.
+```{r, fig.width=7, fig.asp=0.62}
+par(mar = c(4,5,0,0))
+P3_all <- Pnm_all(m = 3, theta = 0, probs = allele_freqs, locuswise = FALSE)
+plot(P3_all, xlab = "no. of alleles", ylab = "Probability", type = "o")
+```
+
+## Posterior probability for the number of contributors
+
+Assume that we specify the prior, $P(m)$, on $m$ based on some general idea on the 
+number of contributors we typically see, or based on other background information
+regarding the case. Then $P(m)$ reflects the belief we have about $m$ prior to 
+seeing the DNA mixture.
+
+Using Bayes' theorem, we can express the probability distribution for
+the number of contributors, $m$, given the number of observed alleles,
+$n_{l}$:
+$$
+  P(m\mid n_{l}) = \frac{P(n_{l}\mid m)P(m)}{P(n_{l})} =
+  \frac{P(N_l(m) = n_{l})P(m)}{\sum_m P(N_l(m) = n_{l})P(m)},
+$$
+where $P(m)$ is a prior distribution on the number of contributors,
+$m$. We may also generalise this to including all information, 
+$\underline{n} = (n_1, \dots, n_L)$, from 
+the loci based on the independent assumption.
+
+$$
+  P(m\mid \underline{n}) = \frac{P(\underline{n}\mid m)P(m)}{P(\underline{n})} =
+  \frac{P(m)\prod_{l=1}^L P(N_l(m) = n_{l})}{\sum_m\left\{ P(m)\prod_{l=1}^LP(N_l(m) = n_{l})\right\}},
+$$
+
+Assume that $P(m)$ is given by 
+```{r, fig.width=7, fig.asp=0.62, echo=FALSE}
+par(mar = c(4,5,0,0))
+m_prior <- c(0.2,0.35,0.3,0.2,0.1,0.025)
+m_prior <- m_prior/sum(m_prior)
+barplot(m_prior, names.arg = seq_along(m_prior), ylab = "Prior probability,"~italic(P(m)), xlab = expression(italic(m)))
+```
+
+Let $n_{vWA} = 4$. Then we can update the belief based on this information using 
+the expression above.
+```{r}
+n_vWA <- 4
+P_vWA <- lapply(ms, Pnm_locus, theta = 0, alleleProbs = allele_freqs$vWA)
+P_vWA_n <- sapply(P_vWA, function(p) ifelse(length(p) < n_vWA, 0, p[n_vWA]))
+Pn_vWA <- (m_prior * P_vWA_n)/sum(m_prior * P_vWA_n)
+```
+
+Hence, the change in belief about $m$ can be seen below, where the first row
+is the prior $P(m)$, the second $P(N_{vWA}(m) = n_{vWA})$ and the last 
+$P(n \mid N_{vWA}(m) = n_{vWA})$:
+
+```{r, echo=FALSE}
+kable(rbind("P(m)" = m_prior, "P(n~vWA~=4|m)" = P_vWA_n, "P(m|n~vWA~=4)" = Pn_vWA), col.names = paste0("m=",paste(ms)))
+```
+
+We see that $m =$ `r which.max(Pn_vWA)` is the most probable after seeing 
+`r n_vWA` alleles at vWA.
+
+Assuming that we observe $n_l = 4$ for all loci, $l=1,\dots,L$, we get
+```{r}
+get_pn <- function(p, n){
+  pn <- split(as.data.frame(p), n)
+  p_n <- unlist(lapply(names(pn), function(n_l) if(ncol(pn[[n_l]])<n_l) rep(0,nrow(pn[[n_l]])) else pn[[n_l]][,n_l]))
+  prod(p_n)
+}
+
+n_loci <- rep(4, length(allele_freqs))
+P_all <- lapply(ms, Pnm_all, theta = 0, probs = allele_freqs, locuswise = TRUE)
+P_all_n <- sapply(P_all, get_pn, n_loci)
+Pn_all <- (m_prior * P_all_n)/sum(m_prior * P_all_n)
+```
+
+Hence, the posterior probability of $m$ after observing four alleles at all loci
+is given by 
+```{r, echo=FALSE}
+kable(t(setNames(Pn_all, paste0("P(m=", seq_along(Pn_all),"|n=4)"))))
+```

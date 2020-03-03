@@ -1,0 +1,19 @@
+citHeader("To cite the 'DNAtools' package in publications use:")
+
+citEntry(entry = "article",
+         title = "{DNAtools: Tools for Analysing Forensic Genetic DNA Data}",
+         author = personList(person("Torben", "Tvedebrink"), 
+                             person("Mikkel Meyer", "Andersen"), 
+                             person("James Michael", "Curran")),
+         journal = "Journal of Open Source Software",
+         year = "2020",
+         volume = "5",
+         number = "45",
+         url = "https://doi.org/10.21105/joss.01981",
+         
+         textVersion =
+         paste("Tvedebrink T, Andersen MM, Curran JM (2020).", 
+               "DNAtools: Tools for Analysing Forensic Genetic DNA Data.", 
+               "Journal of Open Source Software, 5(45), 1981,",
+               "URL https://doi.org/10.21105/joss.01981")
+)

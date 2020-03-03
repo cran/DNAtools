@@ -1,0 +1,245 @@
+---
+title: "STR markers in forensic genetics"
+author: "Mikkel Meyer Andersen, James Michael Curran and Torben Tvedebrink"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_caption: yes
+vignette: >
+  %\VignetteIndexEntry{Forensic genetics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "", 
+  fig.width = 12, 
+  fig.asp = 0.62
+)
+options(knitr.kable.NA = '')
+```
+
+# Introduction
+
+DNA evidence is the pre-eminent tool in the modern forensic scientists toolbox. 
+It is widely accepted by the public, scientific and legal communities and it 
+has been instrumental in determining both the innocence and guilt of individuals 
+involved in the legal process. Despite this widespread acceptance there is unease 
+regarding the statistical measures used to evaluate DNA evidence amongst some 
+of members of all these communities. In particular, some people regard the random 
+match probabilities associated with DNA evidence as just too small or basically 
+unsupportable. In this vignette we discuss the basics of STR profiles, which
+serves as a reference for the package's other vignettes:
+
+* In the `db_vignette` ("Empirical testing of DNA match probabilities") we discuss what it means for a pair of DNA 
+profiles to match or partially match, and we present how the `DNAtools` package 
+allows a rational examination of the statistical properties of a DNA database.
+
+* In the `noa_vignette` ("On the exact distribution of the numbers of alleles in DNA mixtures") we show how to calculate the distribution of the number 
+of distinct alleles present in a DNA mixture constituted by an arbitrary number of
+contributors.
+
+## Matches and partial matches
+
+Forensic genetics has its terminology which we briefly explain here. Human DNA 
+consists of 23 pairs of chromosomes and those chromosomes are composed of a 
+sequence of nucleotides which are labelled `A`, `G`, `C` and `T` after the bases 
+adenine, guanine, cytosine and thymine that are used to form them. Modern DNA 
+typing uses short tandem repeats (STRs). These are regions of DNA which are highly
+variable, but are patterned in that they consist of repeats of a short sequence 
+of DNA bases. The locations at which this information is collected are called loci, 
+and the (length) variations in the patterns observed at each locus are called alleles. 
+We have two alleles at each locus, because humans are a diploid species, meaning 
+they have two copies of each chromosome. One allele comes from our mother, and the
+other from our father. 
+
+
+A pair of alleles at a locus is called a genotype, and 
+therefore a DNA profile is actually a multi-locus genotype. Modern forensic 
+laboratories genotype DNA evidence using commercial kits, called multiplexes 
+which consist of 9--17 loci. The multiplex currently used in the United Kingdom 
+(and until recently New Zealand and Denmark) is called [AmpFlSTR SGM Plus](https://en.wikipedia.org/wiki/Second_Generation_Multiplex_Plus), or 
+SGM Plus for short, and consists of 10 loci, plus one gender specific locus, 
+Amelogenin. Forensic laboratories in the United States which load profiles into 
+the FBI's Combined DNA Index System (CODIS) collect a core set of thirteen loci, 
+although they are not constrained to use one multiplex.
+
+```{r, echo = FALSE}
+STR_profile <- rbind(
+  `**Locus:**` = c("vWA","D18","TH01","D2","D8","D3","FGA","D16","D21","D19"),
+  `**Alleles:**` = c("15, 18", "14, 17",  "6, 9.3", "17, 23", "12, 15", "15, 15", "19, 23", "11, 12", "28, 28", "13, 14")
+)
+kable(STR_profile, caption = "A DNA profile from the SGM plus multiplex")
+```
+
+Table above shows a DNA profile from the SGM plus multiplex. There are two 
+numbers at each locus representing the two alleles that make up the genotype at 
+that locus. The numbers relate to the number of times the pattern or motif that 
+describe the alleles at the locus are repeated. For example, this person's genotype 
+at the locus TH01 is `6,9.3`. This means that on one chromosome, the motif for TH01,
+`TCAT` was repeated 6 times, and on the other chromosome it was repeated 9 times, 
+and then followed by `TCA`. The `.3` represents the fact that three of the four 
+bases have been repeated.
+
+# The `DNAtools` package
+
+The aim of the `DNAtools` package is to provide statisticians and
+forensic scientists with access to the specific procedures described in the
+other vignettes. For example, for the database matching exercise (`db_vignette`),
+early implementations by @weir2004 and then @curran2007 required custom written 
+code for each new database and, in the case of @curran2007, generation of at least half a
+dozen precursor files and a significant amount of memory. @tvedebrink2010; @tvedebrink2012
+reduced the computational effort of @weir2004 and @curran2007 by deriving recursion formulas for 
+the expectation and variance of the computed summary statistics.
+`DNAtools` aims to make all of these procedures easier to use in **R**.
+
+## Using the package `DNAtools` 
+
+```{r, message=FALSE}
+library(DNAtools)
+browseVignettes(package = "DNAtools")
+```
+
+In the listed vignettes the main features of the package are described, 
+which allows statisticians and forensic scientists to easily examine the properties
+of a forensic DNA database. In particular, our package makes it simple
+to carry out a database comparison exercise where every DNA profile in
+the database is compared to every other database, and compare the
+resulting numbers of observed pairs of matching and partially matching
+profiles to expectation under a set of population genetic
+assumptions. Similarly, evaluating the distribution of the number of distinct
+alleles in high-order DNA mixtures is easily computed. 
+
+# References
+
+---
+references: 
+- id: brenner2007
+  author: 
+    - family: Brenner 
+      given: C
+  title: Arizona DNA Database Matches.
+  URL: http://dna-view.com/ArizonaMatch.htm
+  issued:
+    year: 2007
+- id: budowle_1999
+  author: 
+    - family: Budowle 
+      given: B
+    - family: Moretti 
+      given: TR
+  title: Genotype Profiles for Six Population Groups at the 13 CODIS Short Tandem Repeat Core Loci and Other PCR-Based Loci.
+  container-title: Forensic Science Communications 1(2).
+  URL: http://www2.fbi.gov/hq/lab/fsc/backissu/july1999/budowle.htm
+  issued:
+    year: 1999
+- id: curran2010
+  author:
+  - family: Curran 
+    given: JM 
+  - family: Buckleton 
+    given: JS 
+  issued:
+    year: 2010
+  title: Re Sign mistake in allele sharing probability formulae of Curran, et al.
+  container-title: "Forensic Science International: Genetics, 4(3), 215--217."
+- id: curran2007
+  author:
+  - family: Curran 
+    given: JM
+  - family: Walsh 
+    given: SJ
+  - family: Buckleton 
+    given: J 
+  issued: 
+    year: 2007
+  title: Empirical testing of estimated DNA frequencies.
+  container-title: "Forensic Science International: Genetics, 1(3-4), 267--272."
+- id: Rsolnp
+  author: 
+  - family: Ghalanos
+    given: A
+  - family: Theussl
+    given: S
+  issued: 
+    year: 2012
+  title: Rsolnp General Non-linear Optimization Using Augmented Lagrange Multiplier Method. 
+  container-title: R package version 1.16.
+- id: kaye2009
+  author:
+  - family: Kaye
+    given: DH
+  issued: 
+    year: 2009
+  title: "Trawling DNA Databases for Partial Matches: What Is the FBI Afraid Of?"
+  container-title: Cornell Journal of Law and Public Policy, 19(1)
+- id: mueller2008
+  author:
+  - family: Mueller
+    given: LD
+  issued: 
+    year: 2008
+  title: Can simple population genetic models reconcile partial match frequencies observed in large forensic databases?
+  container-title: Journal of Genetics, 87(2), 101--108.
+- id: troyer2001
+  author:
+  - family: Troyer
+    given: K
+  - family: Gilboy T
+    given: T
+  - family: Koeneman
+    given: B
+  issued: 
+    year: 2001
+  title: A nine STR locus match between two apparently unrelated individuals using AmFlSTR Profiler Plus and Cofiler
+  container-title: In Genetic Identity Conference Proceedings, 12th International Symposium on Human Identification.
+- id: tvedebrink2010
+  author:
+  - family: Tvedebrink
+    given: T
+  issued:
+    year: 2010
+  title: Statistical Aspects of Forensic Genetics -- Models for Qualitative and Quantitative STR Data.
+  container-title: Ph.D. thesis, Department of Mathematical Sciences, Aalborg University.
+- id: tvedebrink2012
+  author:
+  - family: Tvedebrink
+    given: T
+  - family: Eriksen 
+    given: PS
+  - family: Curran
+    given: JM
+  - family: Mogensen
+    given: HS
+  - family: Morling 
+    given: N
+  issued:
+    year: 2012
+  title: Analysis of matches and partial-matches in a Danish DNA reference profile data set.
+  container-title: "Forensic Science International: Genetics 6(3), 387-392."
+- id: weir2004
+  author:
+  - family: Weir 
+    given: BS
+  title: Matching and partially-matching DNA profiles.
+  container-title: Journal of Forensic Sciences, 49(5), 1009--1014.
+  issued:
+    year: 2004
+- id: weir2007
+  author: 
+  - family: Weir 
+    given: BS
+  issued:
+    year: 2007
+  title: The rarity of DNA Profiles.
+  container-title: The Annals of Applied Statistics, 1(2), 358--370.
+- id: wiki_birthday
+  author: Wikipedia 
+  issued: 
+    year: 2010
+  title: Birthday problem.
+  URL: http://en.wikipedia.org/wiki/Birthday_problem
+---
