@@ -12,7 +12,7 @@
 
 <meta name="author" content="Mikkel Meyer Andersen, James Michael Curran and Torben Tvedebrink" />
 
-<meta name="date" content="2020-03-03" />
+<meta name="date" content="2020-07-06" />
 
 <title>STR markers in forensic genetics</title>
 
@@ -37,7 +37,7 @@ a.sourceLine { text-indent: -1em; padding-left: 1em; }
 pre.numberSource a.sourceLine
   { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+  { content: attr(title);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
     border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
@@ -301,7 +301,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">STR markers in forensic genetics</h1>
 <h4 class="author">Mikkel Meyer Andersen, James Michael Curran and Torben Tvedebrink</h4>
-<h4 class="date">2020-03-03</h4>
+<h4 class="date">2020-07-06</h4>
 
 
 
@@ -355,8 +355,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>The aim of the <code>DNAtools</code> package is to provide statisticians and forensic scientists with access to the specific procedures described in the other vignettes. For example, for the database matching exercise (<code>db_vignette</code>), early implementations by <span class="citation">Weir (2004)</span> and then <span class="citation">Curran, Walsh, and Buckleton (2007)</span> required custom written code for each new database and, in the case of <span class="citation">Curran, Walsh, and Buckleton (2007)</span>, generation of at least half a dozen precursor files and a significant amount of memory. <span class="citation">Tvedebrink (2010)</span>; <span class="citation">Tvedebrink et al. (2012)</span> reduced the computational effort of <span class="citation">Weir (2004)</span> and <span class="citation">Curran, Walsh, and Buckleton (2007)</span> by deriving recursion formulas for the expectation and variance of the computed summary statistics. <code>DNAtools</code> aims to make all of these procedures easier to use in <strong>R</strong>.</p>
 <div id="using-the-package-dnatools" class="section level2">
 <h2>Using the package <code>DNAtools</code></h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(DNAtools)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">browseVignettes</span>(<span class="dt">package =</span> <span class="st">&quot;DNAtools&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(DNAtools)</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">browseVignettes</span>(<span class="dt">package =</span> <span class="st">&quot;DNAtools&quot;</span>)</a></code></pre></div>
 <p>In the listed vignettes the main features of the package are described, which allows statisticians and forensic scientists to easily examine the properties of a forensic DNA database. In particular, our package makes it simple to carry out a database comparison exercise where every DNA profile in the database is compared to every other database, and compare the resulting numbers of observed pairs of matching and partially matching profiles to expectation under a set of population genetic assumptions. Similarly, evaluating the distribution of the number of distinct alleles in high-order DNA mixtures is easily computed.</p>
 </div>
 </div>

@@ -1,7 +1,7 @@
 Package: DNAtools
 Type: Package
 Title: Tools for Analysing Forensic Genetic DNA Data
-Version: 0.2-2
+Version: 0.2-3
 Authors@R: c(
     person(given = "Torben", family = "Tvedebrink", 
         email = "tvede@math.aau.dk", role = c("aut")),
@@ -18,7 +18,10 @@ Description: Computationally efficient tools for comparing all pairs of profiles
     in a DNA database. The expectation and covariance of the summary statistic
     is implemented for fast computing. Routines for estimating proportions of
     close related individuals are available. The use of wildcards (also called F-
-    designation) is implemented. Dedicated functions ease plotting the results.
+    designation) is implemented. Dedicated functions ease plotting the results. 
+    See Tvedebrink et al. (2012) <doi:10.1016/j.fsigen.2011.08.001>. 
+    Compute the distribution of the numbers of alleles in DNA mixtures. 
+    See Tvedebrink (2013) <doi:10.1016/j.fsigss.2013.10.142>.
 License: GPL (>= 2) | file LICENSE
 Depends: R (>= 3.3.0)
 Imports: Rsolnp (>= 1.16), multicool (>= 0.1-10), Rcpp (>= 0.12.12),
@@ -28,9 +31,9 @@ SystemRequirements: C++11, GNU make
 BugReports: https://github.com/mikldk/DNAtools/issues
 NeedsCompilation: yes
 Encoding: UTF-8
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Suggests: testthat, testthis, knitr, rmarkdown
 VignetteBuilder: utils, knitr
-Packaged: 2020-03-03 13:16:59 UTC; mikl
+Packaged: 2020-07-06 20:21:25 UTC; mikl
 Repository: CRAN
-Date/Publication: 2020-03-03 14:30:15 UTC
+Date/Publication: 2020-07-07 12:50:23 UTC
