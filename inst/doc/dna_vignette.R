@@ -15,7 +15,7 @@ STR_profile <- rbind(
 )
 kable(STR_profile, caption = "A DNA profile from the SGM plus multiplex")
 
-## ---- message=FALSE-----------------------------------------------------------
-library(DNAtools)
-browseVignettes(package = "DNAtools")
+## ---- message=FALSE, eval=FALSE-----------------------------------------------
+#  library(DNAtools)
+#  browseVignettes(package = "DNAtools")
 

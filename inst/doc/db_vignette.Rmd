@@ -274,7 +274,7 @@ references:
     - family: Brenner 
       given: C
   title: Arizona DNA Database Matches.
-  URL: http://dna-view.com/ArizonaMatch.htm
+  URL: https://dna-view.com/ArizonaMatch.htm
   issued:
     year: 2007
 - id: budowle_1999
@@ -393,5 +393,5 @@ references:
   issued: 
     year: 2010
   title: Birthday problem.
-  URL: http://en.wikipedia.org/wiki/Birthday_problem
+  URL: https://en.wikipedia.org/wiki/Birthday_problem
 ---

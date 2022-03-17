@@ -12,34 +12,66 @@
 
 <meta name="author" content="Mikkel Meyer Andersen, James Michael Curran and Torben Tvedebrink" />
 
-<meta name="date" content="2020-07-06" />
+<meta name="date" content="2022-03-17" />
 
 <title>STR markers in forensic genetics</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -48,9 +80,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -106,6 +138,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </script>
 
 
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <style type="text/css">body {
 background-color: #fff;
@@ -300,24 +355,77 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">STR markers in forensic genetics</h1>
-<h4 class="author">Mikkel Meyer Andersen, James Michael Curran and Torben Tvedebrink</h4>
-<h4 class="date">2020-07-06</h4>
+<h4 class="author">Mikkel Meyer Andersen, James Michael Curran and
+Torben Tvedebrink</h4>
+<h4 class="date">2022-03-17</h4>
 
 
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>DNA evidence is the pre-eminent tool in the modern forensic scientists toolbox. It is widely accepted by the public, scientific and legal communities and it has been instrumental in determining both the innocence and guilt of individuals involved in the legal process. Despite this widespread acceptance there is unease regarding the statistical measures used to evaluate DNA evidence amongst some of members of all these communities. In particular, some people regard the random match probabilities associated with DNA evidence as just too small or basically unsupportable. In this vignette we discuss the basics of STR profiles, which serves as a reference for the package’s other vignettes:</p>
+<p>DNA evidence is the pre-eminent tool in the modern forensic
+scientists toolbox. It is widely accepted by the public, scientific and
+legal communities and it has been instrumental in determining both the
+innocence and guilt of individuals involved in the legal process.
+Despite this widespread acceptance there is unease regarding the
+statistical measures used to evaluate DNA evidence amongst some of
+members of all these communities. In particular, some people regard the
+random match probabilities associated with DNA evidence as just too
+small or basically unsupportable. In this vignette we discuss the basics
+of STR profiles, which serves as a reference for the package’s other
+vignettes:</p>
 <ul>
-<li><p>In the <code>db_vignette</code> (“Empirical testing of DNA match probabilities”) we discuss what it means for a pair of DNA profiles to match or partially match, and we present how the <code>DNAtools</code> package allows a rational examination of the statistical properties of a DNA database.</p></li>
-<li><p>In the <code>noa_vignette</code> (“On the exact distribution of the numbers of alleles in DNA mixtures”) we show how to calculate the distribution of the number of distinct alleles present in a DNA mixture constituted by an arbitrary number of contributors.</p></li>
+<li><p>In the <code>db_vignette</code> (“Empirical testing of DNA match
+probabilities”) we discuss what it means for a pair of DNA profiles to
+match or partially match, and we present how the <code>DNAtools</code>
+package allows a rational examination of the statistical properties of a
+DNA database.</p></li>
+<li><p>In the <code>noa_vignette</code> (“On the exact distribution of
+the numbers of alleles in DNA mixtures”) we show how to calculate the
+distribution of the number of distinct alleles present in a DNA mixture
+constituted by an arbitrary number of contributors.</p></li>
 </ul>
 <div id="matches-and-partial-matches" class="section level2">
 <h2>Matches and partial matches</h2>
-<p>Forensic genetics has its terminology which we briefly explain here. Human DNA consists of 23 pairs of chromosomes and those chromosomes are composed of a sequence of nucleotides which are labelled <code>A</code>, <code>G</code>, <code>C</code> and <code>T</code> after the bases adenine, guanine, cytosine and thymine that are used to form them. Modern DNA typing uses short tandem repeats (STRs). These are regions of DNA which are highly variable, but are patterned in that they consist of repeats of a short sequence of DNA bases. The locations at which this information is collected are called loci, and the (length) variations in the patterns observed at each locus are called alleles. We have two alleles at each locus, because humans are a diploid species, meaning they have two copies of each chromosome. One allele comes from our mother, and the other from our father.</p>
-<p>A pair of alleles at a locus is called a genotype, and therefore a DNA profile is actually a multi-locus genotype. Modern forensic laboratories genotype DNA evidence using commercial kits, called multiplexes which consist of 9–17 loci. The multiplex currently used in the United Kingdom (and until recently New Zealand and Denmark) is called <a href="https://en.wikipedia.org/wiki/Second_Generation_Multiplex_Plus">AmpFlSTR SGM Plus</a>, or SGM Plus for short, and consists of 10 loci, plus one gender specific locus, Amelogenin. Forensic laboratories in the United States which load profiles into the FBI’s Combined DNA Index System (CODIS) collect a core set of thirteen loci, although they are not constrained to use one multiplex.</p>
-<table>
+<p>Forensic genetics has its terminology which we briefly explain here.
+Human DNA consists of 23 pairs of chromosomes and those chromosomes are
+composed of a sequence of nucleotides which are labelled <code>A</code>,
+<code>G</code>, <code>C</code> and <code>T</code> after the bases
+adenine, guanine, cytosine and thymine that are used to form them.
+Modern DNA typing uses short tandem repeats (STRs). These are regions of
+DNA which are highly variable, but are patterned in that they consist of
+repeats of a short sequence of DNA bases. The locations at which this
+information is collected are called loci, and the (length) variations in
+the patterns observed at each locus are called alleles. We have two
+alleles at each locus, because humans are a diploid species, meaning
+they have two copies of each chromosome. One allele comes from our
+mother, and the other from our father.</p>
+<p>A pair of alleles at a locus is called a genotype, and therefore a
+DNA profile is actually a multi-locus genotype. Modern forensic
+laboratories genotype DNA evidence using commercial kits, called
+multiplexes which consist of 9–17 loci. The multiplex currently used in
+the United Kingdom (and until recently New Zealand and Denmark) is
+called <a href="https://en.wikipedia.org/wiki/Second_Generation_Multiplex_Plus">AmpFlSTR
+SGM Plus</a>, or SGM Plus for short, and consists of 10 loci, plus one
+gender specific locus, Amelogenin. Forensic laboratories in the United
+States which load profiles into the FBI’s Combined DNA Index System
+(CODIS) collect a core set of thirteen loci, although they are not
+constrained to use one multiplex.</p>
+<table style="width:100%;">
 <caption>A DNA profile from the SGM plus multiplex</caption>
+<colgroup>
+<col width="15%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+</colgroup>
 <tbody>
 <tr class="odd">
 <td align="left"><strong>Locus:</strong></td>
@@ -347,33 +455,75 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </tr>
 </tbody>
 </table>
-<p>Table above shows a DNA profile from the SGM plus multiplex. There are two numbers at each locus representing the two alleles that make up the genotype at that locus. The numbers relate to the number of times the pattern or motif that describe the alleles at the locus are repeated. For example, this person’s genotype at the locus TH01 is <code>6,9.3</code>. This means that on one chromosome, the motif for TH01, <code>TCAT</code> was repeated 6 times, and on the other chromosome it was repeated 9 times, and then followed by <code>TCA</code>. The <code>.3</code> represents the fact that three of the four bases have been repeated.</p>
+<p>Table above shows a DNA profile from the SGM plus multiplex. There
+are two numbers at each locus representing the two alleles that make up
+the genotype at that locus. The numbers relate to the number of times
+the pattern or motif that describe the alleles at the locus are
+repeated. For example, this person’s genotype at the locus TH01 is
+<code>6,9.3</code>. This means that on one chromosome, the motif for
+TH01, <code>TCAT</code> was repeated 6 times, and on the other
+chromosome it was repeated 9 times, and then followed by
+<code>TCA</code>. The <code>.3</code> represents the fact that three of
+the four bases have been repeated.</p>
 </div>
 </div>
 <div id="the-dnatools-package" class="section level1">
 <h1>The <code>DNAtools</code> package</h1>
-<p>The aim of the <code>DNAtools</code> package is to provide statisticians and forensic scientists with access to the specific procedures described in the other vignettes. For example, for the database matching exercise (<code>db_vignette</code>), early implementations by <span class="citation">Weir (2004)</span> and then <span class="citation">Curran, Walsh, and Buckleton (2007)</span> required custom written code for each new database and, in the case of <span class="citation">Curran, Walsh, and Buckleton (2007)</span>, generation of at least half a dozen precursor files and a significant amount of memory. <span class="citation">Tvedebrink (2010)</span>; <span class="citation">Tvedebrink et al. (2012)</span> reduced the computational effort of <span class="citation">Weir (2004)</span> and <span class="citation">Curran, Walsh, and Buckleton (2007)</span> by deriving recursion formulas for the expectation and variance of the computed summary statistics. <code>DNAtools</code> aims to make all of these procedures easier to use in <strong>R</strong>.</p>
+<p>The aim of the <code>DNAtools</code> package is to provide
+statisticians and forensic scientists with access to the specific
+procedures described in the other vignettes. For example, for the
+database matching exercise (<code>db_vignette</code>), early
+implementations by <span class="citation">Weir (2004)</span> and then
+<span class="citation">Curran, Walsh, and Buckleton (2007)</span>
+required custom written code for each new database and, in the case of
+<span class="citation">Curran, Walsh, and Buckleton (2007)</span>,
+generation of at least half a dozen precursor files and a significant
+amount of memory. <span class="citation">Tvedebrink (2010)</span>; <span class="citation">Tvedebrink et al. (2012)</span> reduced the
+computational effort of <span class="citation">Weir (2004)</span> and
+<span class="citation">Curran, Walsh, and Buckleton (2007)</span> by
+deriving recursion formulas for the expectation and variance of the
+computed summary statistics. <code>DNAtools</code> aims to make all of
+these procedures easier to use in <strong>R</strong>.</p>
 <div id="using-the-package-dnatools" class="section level2">
 <h2>Using the package <code>DNAtools</code></h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(DNAtools)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">browseVignettes</span>(<span class="dt">package =</span> <span class="st">&quot;DNAtools&quot;</span>)</a></code></pre></div>
-<p>In the listed vignettes the main features of the package are described, which allows statisticians and forensic scientists to easily examine the properties of a forensic DNA database. In particular, our package makes it simple to carry out a database comparison exercise where every DNA profile in the database is compared to every other database, and compare the resulting numbers of observed pairs of matching and partially matching profiles to expectation under a set of population genetic assumptions. Similarly, evaluating the distribution of the number of distinct alleles in high-order DNA mixtures is easily computed.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DNAtools)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">browseVignettes</span>(<span class="at">package =</span> <span class="st">&quot;DNAtools&quot;</span>)</span></code></pre></div>
+<p>In the listed vignettes the main features of the package are
+described, which allows statisticians and forensic scientists to easily
+examine the properties of a forensic DNA database. In particular, our
+package makes it simple to carry out a database comparison exercise
+where every DNA profile in the database is compared to every other
+database, and compare the resulting numbers of observed pairs of
+matching and partially matching profiles to expectation under a set of
+population genetic assumptions. Similarly, evaluating the distribution
+of the number of distinct alleles in high-order DNA mixtures is easily
+computed.</p>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
-<h1>References</h1>
-<div id="refs" class="references">
-<div id="ref-curran2007">
-<p>Curran, JM, SJ Walsh, and J Buckleton. 2007. “Empirical Testing of Estimated DNA Frequencies.” <em>Forensic Science International: Genetics, 1(3-4), 267–272.</em></p>
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-curran2007" class="csl-entry">
+Curran, JM, SJ Walsh, and J Buckleton. 2007. <span>“Empirical Testing of
+Estimated DNA Frequencies.”</span> <em>Forensic Science International:
+Genetics, 1(3-4), 267–272.</em>
 </div>
-<div id="ref-tvedebrink2010">
-<p>Tvedebrink, T. 2010. “Statistical Aspects of Forensic Genetics – Models for Qualitative and Quantitative STR Data.” <em>Ph.D. thesis, Department of Mathematical Sciences, Aalborg University.</em></p>
+<div id="ref-tvedebrink2010" class="csl-entry">
+Tvedebrink, T. 2010. <span>“Statistical Aspects of Forensic Genetics –
+Models for Qualitative and Quantitative STR Data.”</span>
+<em>Ph.D. Thesis, Department of Mathematical Sciences, Aalborg
+University.</em>
 </div>
-<div id="ref-tvedebrink2012">
-<p>Tvedebrink, T, PS Eriksen, JM Curran, HS Mogensen, and N Morling. 2012. “Analysis of Matches and Partial-Matches in a Danish DNA Reference Profile Data Set.” <em>Forensic Science International: Genetics 6(3), 387-392.</em></p>
+<div id="ref-tvedebrink2012" class="csl-entry">
+Tvedebrink, T, PS Eriksen, JM Curran, HS Mogensen, and Morling. 2012.
+<span>“Analysis of Matches and Partial-Matches in a Danish DNA Reference
+Profile Data Set.”</span> <em>Forensic Science International: Genetics
+6(3), 387-392.</em>
 </div>
-<div id="ref-weir2004">
-<p>Weir, BS. 2004. “Matching and Partially-Matching DNA Profiles.” <em>Journal of Forensic Sciences, 49(5), 1009–1014.</em></p>
+<div id="ref-weir2004" class="csl-entry">
+Weir, BS. 2004. <span>“Matching and Partially-Matching DNA
+Profiles.”</span> <em>Journal of Forensic Sciences, 49(5),
+1009–1014.</em>
 </div>
 </div>
 </div>

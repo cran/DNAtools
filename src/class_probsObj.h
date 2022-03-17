@@ -10,7 +10,7 @@
 using namespace std;
 using namespace Rcpp;
 
-// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::plugins(cpp17)]]
 
 namespace{
 	// a little helper that should IMHO be standardized
@@ -43,7 +43,7 @@ namespace std{
 	template<>
 	struct hash<IntegerVector> : hash_container<IntegerVector> {};
 	
-	struct equal_to_intvec : binary_function<IntegerVector, IntegerVector, bool> {
+	struct equal_to_intvec {
 		bool operator() (const IntegerVector& x, const IntegerVector& y) const{
 			if (x.size() != y.size()){
 				return false;

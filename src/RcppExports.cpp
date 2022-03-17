@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // score_rcpp
 Rcpp::IntegerVector score_rcpp(const Rcpp::IntegerVector& prof1, const Rcpp::IntegerVector& prof2, int numLoci, bool useWildCard, bool useRareAllele);
 RcppExport SEXP _DNAtools_score_rcpp(SEXP prof1SEXP, SEXP prof2SEXP, SEXP numLociSEXP, SEXP useWildCardSEXP, SEXP useRareAlleleSEXP) {

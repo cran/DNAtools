@@ -1,7 +1,7 @@
 Package: DNAtools
 Type: Package
 Title: Tools for Analysing Forensic Genetic DNA Data
-Version: 0.2-3
+Version: 0.2-4
 Authors@R: c(
     person(given = "Torben", family = "Tvedebrink", 
         email = "tvede@math.aau.dk", role = c("aut")),
@@ -27,13 +27,13 @@ Depends: R (>= 3.3.0)
 Imports: Rsolnp (>= 1.16), multicool (>= 0.1-10), Rcpp (>= 0.12.12),
         RcppParallel (>= 4.3.20)
 LinkingTo: Rcpp, RcppParallel, RcppProgress
-SystemRequirements: C++11, GNU make
+SystemRequirements: C++17, GNU make
 BugReports: https://github.com/mikldk/DNAtools/issues
 NeedsCompilation: yes
 Encoding: UTF-8
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.2
 Suggests: testthat, testthis, knitr, rmarkdown
 VignetteBuilder: utils, knitr
-Packaged: 2020-07-06 20:21:25 UTC; mikl
+Packaged: 2022-03-17 12:21:48 UTC; mikl
 Repository: CRAN
-Date/Publication: 2020-07-07 12:50:23 UTC
+Date/Publication: 2022-03-17 13:10:06 UTC

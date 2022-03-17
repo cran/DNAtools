@@ -4,7 +4,7 @@
 
 using namespace Rcpp;
 
-// [[Rcpp::plugins(cpp11)]]
+// [[Rcpp::plugins(cpp17)]]
 
 //' @export
 // [[Rcpp::export]]

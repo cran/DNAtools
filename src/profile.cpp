@@ -415,9 +415,10 @@ public:
   									nFScore = 2;
   								}
   							}else{
-  								if(bWildcardEffect)
+  								if(bWildcardEffect) {
   									fm1++;
   									nFScore = 1;
+  								}
   							}
   						}
   					}
