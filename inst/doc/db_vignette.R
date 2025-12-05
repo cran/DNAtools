@@ -8,7 +8,7 @@ knitr::opts_chunk$set(
 )
 options(knitr.kable.NA = '')
 
-## ---- message=FALSE-----------------------------------------------------------
+## ----message=FALSE------------------------------------------------------------
 library(DNAtools)
 
 ## -----------------------------------------------------------------------------
@@ -25,7 +25,7 @@ names(allele_freqs) <- sub("\\.1", "", names(dbExample)[(1:10)*2])
 ## -----------------------------------------------------------------------------
 db_summary <- dbCompare(dbExample, hit = 6, trace = FALSE)
 
-## ---- echo = FALSE, results='asis'--------------------------------------------
+## ----echo = FALSE, results='asis'---------------------------------------------
 db_summary$m[!DNAtools:::up.tri(db_summary$m)] <- NA
 rownames(db_summary$m) <- paste0("**",rownames(db_summary$m),"**")
 kable(db_summary$m)
@@ -58,7 +58,7 @@ relatives <- list(
   AV = dbExpect(probs = allele_freqs,  k = c(0,1,1)/2, collapse = TRUE)
 )
 
-## ---- echo=FALSE--------------------------------------------------------------
+## ----echo=FALSE---------------------------------------------------------------
 pos_range <- unlist(relatives)
 pos_range <- range(pos_range[pos_range>0])
 

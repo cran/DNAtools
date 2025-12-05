@@ -35,6 +35,13 @@ Forensic Science International: Genetics, 6(3): 387-392.
 
 Read the vignette: \code{vigette('DNAtools')}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item Report bugs at \url{https://github.com/mikldk/DNAtools/issues}
+}
+
+}
 \author{
 Torben Tvedebrink <tvede@math.aau.dk>, James Curran
 <j.curran@auckland.ac.nz> and Mikkel Meyer Andersen

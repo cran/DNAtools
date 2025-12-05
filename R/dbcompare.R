@@ -140,7 +140,7 @@ dbCompare <- function(x, profiles = NULL, hit = 7, trace = TRUE, vector = FALSE,
   
   orderAlleles = function(x) {
     for (i in ((0:(numLoci - 1)) * 2 + 1)) {
-      ## Looks for situations where A[1]>A[2]: C++ code assumes A[1]<=A[2]
+      ## Looks for situations where A[1]>A[2]: C++ code assumes A[1]<=A[2]Rallele
       if (any(swap.index <- x[[i]] > x[[i + 1]])) {
         if (Rallele) 
           swap.index[x[[i]] == 990] <- FALSE  ## If R-allele (coded as 99*10, cf above) don't swap (order matters)
@@ -158,7 +158,7 @@ dbCompare <- function(x, profiles = NULL, hit = 7, trace = TRUE, vector = FALSE,
   if (!wildcard) {
     ## If no wildcard is allowed, but the database contains '0' which is equivalent of 'F' then
     ## these profiles are removed before comparison
-    x0 <- x[(xnull <- apply(x[, -1], 1, function(y) any(y == 0))), ]
+    x0 <- x[(xnull <- apply(x[, -1, FALSE], 1, function(y) any(y == 0))), ]
     x <- x[!xnull, ]
   }
   

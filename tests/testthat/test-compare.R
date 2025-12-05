@@ -152,3 +152,11 @@ if (FALSE) {
 }
 
 
+# https://github.com/mikldk/DNAtools/issues/5
+test_that("dbCompare: one marker", {
+  freq <- list(p1 = c(0.5, 0.5))
+  simdb <- dbSimulate(freq, n = 2)
+  expect_no_error(res <- dbCompare(simdb, trace = FALSE))
+  expect_equal(dim(res$m), c(2, 2))
+})
+

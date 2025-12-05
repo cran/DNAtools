@@ -13,7 +13,8 @@ using namespace std;
 // [[Rcpp::depends(RcppParallel)]]
 #include <RcppParallel.h>
 using namespace RcppParallel;
-#include <tthread/fast_mutex.h>
+//#include <tthread/fast_mutex.h>
+#include <mutex>
 
 
 // [[Rcpp::depends(RcppProgress)]]
@@ -39,8 +40,11 @@ struct CompareWorker : public Worker {
 
   unsigned long m_nNumRows;
   
-  tthread::mutex m_mutex_out_m;
-  tthread::mutex m_mutex_out_vectors;
+  //tthread::mutex m_mutex_out_m;
+  //tthread::mutex m_mutex_out_vectors;
+  std::mutex m_mutex_out_m;
+  std::mutex m_mutex_out_vectors;
+  
   Rcpp::IntegerVector& out_m;
   
   vector<int>& out_row1;
